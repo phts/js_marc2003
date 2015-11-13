@@ -37,7 +37,6 @@ function on_selection_changed() {
 _.mixin({
 	panel : function (name, features) {
 		this.item_focus_change = function () {
-			fb.trace("boo");
 			if (this.metadb_func) {
 				switch (this.selection) {
 				case 0:
