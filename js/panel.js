@@ -25,14 +25,31 @@ function on_playback_stop() {
 }
 
 function on_item_focus_change() {
-	panel.item_focus_change();
+	if (panel.selection < 2)
+		panel.item_focus_change();
+}
+
+function on_selection_changed() {
+	if (panel.selection == 2)
+		panel.item_focus_change();
 }
 
 _.mixin({
 	panel : function (name, features) {
 		this.item_focus_change = function () {
+			fb.trace("boo");
 			if (this.metadb_func) {
-				this.metadb = this.selection == 0 && fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
+				switch (this.selection) {
+				case 0:
+					this.metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem()
+					break;
+				case 1:
+					this.metadb = fb.GetFocusItem();
+					break;
+				case 2:
+					this.metadb = fb.GetSelection();
+					break;
+				}
 				if (this.metadb)
 					on_metadb_changed();
 				else
@@ -136,7 +153,8 @@ _.mixin({
 			if (this.check_feature("metadb")) {
 				this.metadb_menu.AppendMenuItem(MF_STRING, 110, "Prefer now playing");
 				this.metadb_menu.AppendMenuItem(MF_STRING, 111, "Follow selected track");
-				this.metadb_menu.CheckMenuRadioItem(110, 111, this.selection + 110);
+				this.metadb_menu.AppendMenuItem(MF_STRING, 112, "Use display preferences");
+				this.metadb_menu.CheckMenuRadioItem(110, 112, this.selection + 110);
 				this.metadb_menu.AppendTo(this.m, MF_STRING, "Selection mode");
 				this.m.AppendMenuSeparator();
 			}
@@ -171,6 +189,7 @@ _.mixin({
 				break;
 			case idx == 110:
 			case idx == 111:
+			case idx == 112:
 				this.selection = idx - 110;
 				window.SetProperty("2K3.PANEL.SELECTION", this.selection);
 				this.item_focus_change();
