@@ -1,6 +1,5 @@
 _.mixin({
 	text : function (mode, x, y, w, h) {
-		
 		this.size = function () {
 			this.rows = _.floor((this.h - 30) / panel.row_height);
 			this.up_btn.x = this.x + _.round((this.w - 15) / 2);
@@ -51,6 +50,8 @@ _.mixin({
 					if (_.isFile(this.filename)) {
 						var data = _.jsonParse(_.open(this.filename));
 						this.content = data[0];
+						if (typeof this.content != "string")
+							this.content = "It appears the cached file has been corrupted. Use the right click menu>Force Update to try again.";
 						if (_.fileExpired(this.filename, ONE_DAY))
 							this.get();
 					} else {
