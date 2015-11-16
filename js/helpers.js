@@ -123,10 +123,10 @@ _.mixin({
 		}
 	},
 	isFile : function (file) {
-		return typeof file == "string" ? fso.FileExists(file) : false;
+		return _.isString(file) ? fso.FileExists(file) : false;
 	},
 	isFolder : function (folder) {
-		return typeof folder == "string" ? fso.FolderExists(folder) : false;
+		return _.isString(folder) ? fso.FolderExists(folder) : false;
 	},
 	createFolder : function (folder) {
 		if (!_.isFolder(folder))

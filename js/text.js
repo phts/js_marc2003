@@ -50,7 +50,7 @@ _.mixin({
 					if (_.isFile(this.filename)) {
 						var data = _.jsonParse(_.open(this.filename));
 						this.content = data[0];
-						if (typeof this.content != "string")
+						if (!_.isString(this.content))
 							this.content = "It appears the cached file has been corrupted. Use the right click menu>Force Update to try again.";
 						if (_.fileExpired(this.filename, ONE_DAY))
 							this.get();

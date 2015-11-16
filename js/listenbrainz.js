@@ -35,18 +35,18 @@ _.mixin({
 					listened_at : timestamp,
 					track_metadata : {
 						additional_info : {
-							artist_mbids : typeof tags.musicbrainz_artistid == "string" ? [tags.musicbrainz_artistid] : tags.musicbrainz_artistid,
+							artist_mbids : _.isString(tags.musicbrainz_artistid) ? [tags.musicbrainz_artistid] : tags.musicbrainz_artistid,
 							date : tags.date,
 							discnumber : tags.discnumber,
 							recording_mbid : tags.musicbrainz_trackid,
 							release_group_mbid : tags.musicbrainz_releasegroupid,
 							release_mbid : tags.musicbrainz_albumid,
-							tags : typeof tags.genre == "string" ? [tags.genre] : tags.genre,
+							tags : _.isString(tags.genre) ? [tags.genre] : tags.genre,
 							totaldiscs : tags.totaldiscs,
 							totaltracks: tags.totaltracks,
 							track_mbid : tags.musicbrainz_releasetrackid,
 							tracknumber : tags.tracknumber,
-							work_mbids : typeof tags.musicbrainz_workid == "string" ? [tags.musicbrainz_workid] : tags.musicbrainz_workid
+							work_mbids : _.isString(tags.musicbrainz_workid) ? [tags.musicbrainz_workid] : tags.musicbrainz_workid
 						},
 						artist_name : tags.artist,
 						release_name : tags.album,
@@ -103,7 +103,7 @@ _.mixin({
 				if (!this.submit_genres && name == "genre")
 					continue;
 				
-				if (typeof(this.mb_names[name]) == "string")
+				if (_.isString(this.mb_names[name]))
 					var key = this.mb_names[name];
 				else
 					var key = name;
