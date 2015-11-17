@@ -707,9 +707,10 @@ _.mixin({
 			var data = _.jsonParse(this.xmlhttp.responsetext);
 			switch (true) {
 			case this.mode == "musicbrainz" && this.mb_mode == 0:
-				var max_offset = Math.min(500, data["release-group-count"]) - 100;
-				if (data["release-groups"].length > 0)
-					this.mb_data.push.apply(this.mb_data, data["release-groups"]);
+				var max_offset = Math.min(500, data["release-group-count"] || 0) - 100;
+				var rg = data["release-groups"] || [];
+				if (rg.length > 0)
+					this.mb_data.push.apply(this.mb_data, rg);
 				if (this.mb_offset < max_offset) {
 					this.mb_offset += 100;
 					this.get();
