@@ -7,8 +7,8 @@
 // @import "%fb2k_profile_path%js_marc2003\js\listenbrainz.js"
 // ==/PREPROCESSOR==
 
-//before using this script, please read this:
-//https://github.com/19379/js_marc2003/wiki/Listenbrainz
+// Before using this script, please read this:
+// https://github.com/19379/js-marc2003/wiki/Listenbrainz
 
 var panel = new _.panel("Listenbrainz", ["custom_background"]);
 var buttons = new _.buttons();
