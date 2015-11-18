@@ -52,7 +52,6 @@ _.mixin({
 				var post_data = "sk=" + lastfm.sk + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track);
 				break;
 			case "track.scrobble":
-				this.log(timestamp, artist, album, track, duration);
 				var api_sig = md5("album" + album + "api_key" + lastfm.api_key + "artist" + artist + "duration" + duration + "method" + method + "sk" + lastfm.sk + "timestamp" + timestamp + "track" + track + lastfm.secret);
 				var post_data = "format=json&sk=" + lastfm.sk + "&duration=" + duration + "&timestamp=" + timestamp + "&album=" + encodeURIComponent(album) + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track);
 				break;
@@ -320,23 +319,6 @@ _.mixin({
 					panel.console("Database error. Playcount not updated.");
 				}
 			}, this), 250);
-		}
-		
-		this.log = function (timestamp, artist, album, track, duration) {
-			var d = new Date(timestamp * 1000);
-			var f = folders.lastfm + lastfm.username + "." + _.padLeft(d.getMonth() + 1, 2, 0) + "." + d.getFullYear() + ".scrobble.log.json";
-			if (_.isFile(f))
-				var data = _.jsonParse(_.open(f));
-			else
-				var data = [];
-			data.unshift({
-				timestamp : timestamp,
-				artist : artist,
-				album : album,
-				track : track,
-				duration : duration
-			});
-			_.save(JSON.stringify(data), f);
 		}
 		
 		this.start_import = function () {
