@@ -985,7 +985,7 @@ _.mixin({
 				
 				_.createFolder(folders.data);
 				_.createFolder(folders.artists);
-				this.ua = "foobar2000_wsh_panel_mod_musicbrainz +https://github.com/19379";
+				this.ua = "foo_jscript_panel_musicbrainz +https://github.com/19379";
 				this.mb_mode = window.GetProperty("2K3.LIST.MUSICBRAINZ.MODE", 0); //0 releases 1 links
 				this.mb_icons = window.GetProperty("2K3.LIST.MUSICBRAINZ.SHOW.ICONS", true);
 				this.mb_id = "";

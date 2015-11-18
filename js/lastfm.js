@@ -92,7 +92,7 @@ _.mixin({
 		this.secret = this.read_ini("secret");
 		this.username = this.read_ini("username");
 		this.sk = this.read_ini("sk");
-		this.ua = "foobar2000_wsh_panel_mod_scripts";
+		this.ua = "foo_jscript_panel_lastfm";
 		this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 	}
 });
