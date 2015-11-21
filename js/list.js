@@ -397,11 +397,10 @@ _.mixin({
 			case 3102:
 				this.lastfm_mode = idx - 3100;
 				window.SetProperty("2K3.LIST.LASTFM.MODE", this.lastfm_mode);
-				if (this.lastfm_mode == 0) {
+				if (this.lastfm_mode == 0)
 					this.reset();
-				} else {
+				else
 					this.update();
-				}
 				break;
 			case 3110:
 			case 3111:
