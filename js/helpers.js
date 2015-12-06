@@ -262,11 +262,11 @@ _.mixin({
 		case image.crop_top:
 			if (img.Width / img.Height < src_w / src_h) {
 				var dst_w = img.Width;
-				var dst_h = src_h * img.Width / src_w;
+				var dst_h = _.round(src_h * img.Width / src_w);
 				var dst_x = 0;
 				var dst_y = _.round((img.Height - dst_h) / (aspect == image.crop_top ? 4 : 2));
 			} else {
-				var dst_w = src_w * img.Height / src_h;
+				var dst_w = _.round(src_w * img.Height / src_h);
 				var dst_h = img.Height;
 				var dst_x = _.round((img.Width - dst_w) / 2);
 				var dst_y = 0;
