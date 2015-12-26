@@ -1,17 +1,17 @@
 _.mixin({
 	text : function (mode, x, y, w, h) {
 		this.size = function () {
-			this.rows = _.floor((this.h - 30) / panel.row_height);
-			this.up_btn.x = this.x + _.round((this.w - 15) / 2);
+			this.rows = _.floor((this.h - 32) / panel.row_height);
+			this.up_btn.x = this.x + _.round((this.w - 16) / 2);
 			this.down_btn.x = this.up_btn.x;
 			this.up_btn.y = this.y;
-			this.down_btn.y = this.y + this.h - 15;
+			this.down_btn.y = this.y + this.h - 16;
 			this.update();
 		}
 		
 		this.paint = function (gr) {
 			for (var i = 0; i < Math.min(this.rows, this.lines.length); i++) {
-				gr.GdiDrawText(this.lines[i + this.offset], this.fixed ? panel.fonts.fixed : panel.fonts.normal, panel.colours.text, this.x, (this.fixed ? _.floor(panel.row_height / 2) : 0) + 15 + this.y + (i * panel.row_height), this.w, panel.row_height, LEFT);
+				gr.GdiDrawText(this.lines[i + this.offset], this.fixed ? panel.fonts.fixed : panel.fonts.normal, panel.colours.text, this.x, (this.fixed ? _.floor(panel.row_height / 2) : 0) + 16 + this.y + (i * panel.row_height), this.w, panel.row_height, LEFT);
 			}
 			this.up_btn.paint(gr, panel.colours.text);
 			this.down_btn.paint(gr, panel.colours.text);
@@ -400,8 +400,8 @@ _.mixin({
 		this.artist = "";
 		this.album = "";
 		this.filename = "";
-		this.up_btn = new _.sb(guifx.up, this.x, this.y, 15, 15, _.bind(function () { return this.offset > 0; }, this), _.bind(function () { this.wheel(1); }, this));
-		this.down_btn = new _.sb(guifx.down, this.x, this.y, 15, 15, _.bind(function () { return this.offset < this.lines.length - this.rows; }, this), _.bind(function () { this.wheel(-1); }, this));
+		this.up_btn = new _.sb(guifx.up, this.x, this.y, 16, 16, _.bind(function () { return this.offset > 0; }, this), _.bind(function () { this.wheel(1); }, this));
+		this.down_btn = new _.sb(guifx.down, this.x, this.y, 16, 16, _.bind(function () { return this.offset < this.lines.length - this.rows; }, this), _.bind(function () { this.wheel(-1); }, this));
 		this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		this.init();
 	}

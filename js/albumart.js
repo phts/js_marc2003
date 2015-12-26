@@ -52,8 +52,7 @@ _.mixin({
 					this.id = 4;
 				if (this.id > 4)
 					this.id = 0;
-				this.tooltip = "";
-				_.tt(this.tooltip);
+				_.tt("");
 				window.SetProperty("2K3.ARTREADER.ID", this.id);
 				panel.item_focus_change();
 				return true;
