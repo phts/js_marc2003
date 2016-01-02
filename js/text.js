@@ -331,7 +331,7 @@ _.mixin({
 						this.get();
 					} else {
 						panel.console("Could not match artist/album on the Allmusic website.");
-						_.save(JSON.stringify([""]), f);
+						_.save(JSON.stringify([""]), f, -1);
 					}
 				}
 				break;
@@ -341,7 +341,7 @@ _.mixin({
 					.map("innerHTML")
 					.stripTags()
 					.value();
-				_.save(JSON.stringify([content]), f);
+				_.save(JSON.stringify([content]), f, -1);
 				this.artist = "";
 				panel.item_focus_change();
 				break;
