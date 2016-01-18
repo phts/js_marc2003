@@ -93,7 +93,7 @@ var ha_links = [
 	["Homepage", "https://www.foobar2000.org/"],
 	["Components", "https://www.foobar2000.org/components"],
 	["Wiki", "http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Foobar2000"],
-	["Forums", "https://www.hydrogenaud.io/forums/index.php?showforum=28"]
+	["Forums", "https://hydrogenaud.io/index.php/board,28.0.html"]
 ];
 
 _.mixin({
