@@ -308,30 +308,34 @@ _.mixin({
 					this.artist = "";
 					panel.item_focus_change();
 				} else {
-					this.allmusic_url = "";
-					_(_.getElementsByTagName(this.xmlhttp.responsetext, "li"))
-						.filter({"className" : "album"})
-						.forEach(function (item) {
-							var divs = item.getElementsByTagName("div");
-							var album = divs[2].getElementsByTagName("a")[0].innerText;
-							var url = divs[2].getElementsByTagName("a")[0].href;
-							var temp = divs[3].getElementsByTagName("a");
-							if (temp.length > 0)
-								var artist = temp[0].innerText;
-							else
-								var artist = "various artists";
-							if (this.is_match(artist, album)) {
-								this.allmusic_url = url;
-								return false;
-							}
-						}, this)
-						.value();
-					if (this.allmusic_url.length > 0) {
-						panel.console("A page was found for " + _.q(this.album) + ". Now checking for review...");
-						this.get();
-					} else {
-						panel.console("Could not match artist/album on the Allmusic website.");
-						_.save(JSON.stringify([""]), f, -1);
+					try {
+						this.allmusic_url = "";
+						_(_.getElementsByTagName(this.xmlhttp.responsetext, "li"))
+							.filter({"className" : "album"})
+							.forEach(function (item) {
+								var divs = item.getElementsByTagName("div");
+								var album = divs[2].getElementsByTagName("a")[0].innerText;
+								var url = divs[2].getElementsByTagName("a")[0].href;
+								var temp = divs[3].getElementsByTagName("a");
+								if (temp.length > 0)
+									var artist = temp[0].innerText;
+								else
+									var artist = "various artists";
+								if (this.is_match(artist, album)) {
+									this.allmusic_url = url;
+									return false;
+								}
+							}, this)
+							.value();
+						if (this.allmusic_url.length > 0) {
+							panel.console("A page was found for " + _.q(this.album) + ". Now checking for review...");
+							this.get();
+						} else {
+							panel.console("Could not match artist/album on the Allmusic website.");
+							_.save(JSON.stringify([""]), f, -1);
+						}
+					} catch(e) {
+						panel.console("Could not parse Allmusic server response.");
 					}
 				}
 				break;
