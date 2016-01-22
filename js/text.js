@@ -334,7 +334,7 @@ _.mixin({
 							panel.console("Could not match artist/album on the Allmusic website.");
 							_.save(JSON.stringify([""]), f, -1);
 						}
-					} catch(e) {
+					} catch (e) {
 						panel.console("Could not parse Allmusic server response.");
 					}
 				}
