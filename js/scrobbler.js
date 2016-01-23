@@ -4,12 +4,12 @@ _.mixin({
 			if (name == "2K3.NOTIFY.LOVE")
 				this.post(_.tf("%LASTFM_LOVED_DB%", data) == 1 ? "track.unlove" : "track.love", data);
 		}
-		
+
 		this.playback_new_track = function () {
 			this.time_elapsed = 0;
 			this.target_time = Math.min(_.ceil(fb.PlaybackLength / 2), 240);
 		}
-		
+
 		this.playback_time = function () {
 			this.time_elapsed++;
 			switch (true) {
@@ -32,7 +32,7 @@ _.mixin({
 				break;
 			}
 		}
-		
+
 		this.post = function (method, metadb) {
 			if (!lastfm.ok())
 				return;
@@ -78,7 +78,7 @@ _.mixin({
 				}
 			}, this);
 		}
-		
+
 		this.get = function (method, metadb, p) {
 			if (lastfm.api_key.length != 32)
 				return panel.console("Last.fm API KEY not set.");
@@ -125,7 +125,7 @@ _.mixin({
 				}
 			}, this);
 		}
-		
+
 		this.success = function (method, metadb) {
 			switch (method) {
 			case "track.love":
@@ -299,7 +299,7 @@ _.mixin({
 				break;
 			}
 		}
-		
+
 		this.update_playcount = function (metadb, new_value) {
 			panel.console("Attempting to update database...");
 			fb.RunContextCommandWithMetadb("Customdb Delete Playcount", metadb, 8);
@@ -320,7 +320,7 @@ _.mixin({
 				}
 			}, this), 250);
 		}
-		
+
 		this.start_import = function () {
 			fb.ShowConsole();
 			this.loved_page_errors = 0;
@@ -332,7 +332,7 @@ _.mixin({
 			panel.console("Starting import...");
 			this.get("user.getLovedTracks", null, 1);
 		}
-		
+
 		this.finish_import = function () {
 			switch (true) {
 			case !this.full_import && this.loved_page_errors > 0:
@@ -348,7 +348,7 @@ _.mixin({
 			}
 			_.run(_.shortPath(this.cmd_file), _.shortPath(this.sqlite3_file), _.shortPath(this.db_file), _.shortPath(this.sql_file));
 		}
-		
+
 		this.update_button = function () {
 			var n = "mono\\appbar.warning.circle.png";
 			switch (true) {
@@ -369,7 +369,7 @@ _.mixin({
 			buttons.buttons.scrobbler = new _.button(this.x, this.y, this.size, this.size, {normal : n}, _.bind(function () { this.menu(); }, this), tooltip);
 			window.RepaintRect(this.x, this.y, this.size, this.size);
 		}
-		
+
 		this.menu = function () {
 			var m = window.CreatePopupMenu();
 			var s = window.CreatePopupMenu();
@@ -416,7 +416,7 @@ _.mixin({
 			m.Dispose();
 			s.Dispose();
 		}
-		
+
 		this.interval_func = _.bind(function () {
 			if (!this.loved_working && !this.playcount_working)
 				return;
@@ -429,7 +429,7 @@ _.mixin({
 			else if (this.playcount_working)
 				this.get("library.getTracks", null, temp);
 		}, this);
-		
+
 		lastfm.scrobbler = this;
 		_.createFolder(folders.data);
 		_.createFolder(folders.lastfm);
