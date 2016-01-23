@@ -99,7 +99,7 @@ _.mixin({
 				this.page = p;
 				url += "&limit=200&user=" + lastfm.username + "&page=" + this.page;
 				break;
-			case "library.getTracks":
+			case "user.getTopTracks":
 				if (!this.playcount_working)
 					return panel.console("Import aborted.");
 				this.page = p;
@@ -237,7 +237,7 @@ _.mixin({
 						this.playcount_working = true;
 						this.pages = 0;
 						this.r = 1;
-						this.get("library.getTracks", null, 1);
+						this.get("user.getTopTracks", null, 1);
 						break;
 					case this.sql == "BEGIN TRANSACTION;\r\n":
 						panel.console("Nothing found to import.");
@@ -250,19 +250,19 @@ _.mixin({
 					}
 				}
 				break;
-			case "library.getTracks":
+			case "user.getTopTracks":
 				var data = _.jsonParse(this.xmlhttp.responsetext);
 				if (this.page == 1) {
 					if (data.error) {
 						this.playcount_working = false;
 						return panel.console("Last.fm server error:\n\n" + data.message);
 					}
-					if (data.tracks.totalPages == 0)
+					if (data.toptracks.totalPages == 0)
 						this.pages = 0;
 					else
-						this.pages = data.tracks["@attr"].totalPages;
+						this.pages = data.toptracks["@attr"].totalPages;
 				}
-				data = _.get(data, "tracks.track", []);
+				data = _.get(data, "toptracks.track", []);
 				if (_.isUndefined(data.length))
 					data = [data];
 				if (data.length > 0) {
@@ -285,7 +285,7 @@ _.mixin({
 				}
 				if (this.page < this.pages) {
 					this.page++;
-					this.get("library.getTracks", null, this.page);
+					this.get("user.getTopTracks", null, this.page);
 				} else {
 					this.playcount_working = false;
 					if (this.sql == "BEGIN TRANSACTION;\r\n") {
@@ -427,7 +427,7 @@ _.mixin({
 			if (this.loved_working)
 				this.get("user.getLovedTracks", null, temp);
 			else if (this.playcount_working)
-				this.get("library.getTracks", null, temp);
+				this.get("user.getTopTracks", null, temp);
 		}, this);
 
 		lastfm.scrobbler = this;
