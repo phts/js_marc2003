@@ -11,7 +11,7 @@ _.mixin({
 				});
 			}
 		}
-		
+
 		this.auth = function () {
 			var api_sig = md5("api_key" + this.api_key + "methodauth.getMobileSessionpassword" + this.password + "username" + this.username + this.secret);
 			var data = "format=json&password=" + this.password + "&username=" + this.username + "&method=auth.getMobileSession&api_key=" + this.api_key + "&api_sig=" + api_sig;
@@ -34,7 +34,7 @@ _.mixin({
 				}
 			}, this);
 		}
-		
+
 		this.update_username = function () {
 			var username = _.input("Enter your Last.fm username", panel.name, this.username);
 			if (username != this.username) {
@@ -44,7 +44,7 @@ _.mixin({
 				this.notify_data("2K3.NOTIFY.LASTFM", "update");
 			}
 		}
-		
+
 		this.update_password = function () {
 			this.password = _.input("Enter your Last.fm password", panel.name, "");
 			if (this.password.length > 0) {
@@ -54,19 +54,19 @@ _.mixin({
 				this.auth();
 			}
 		}
-		
+
 		this.get_base_url = function () {
 			return "http://ws.audioscrobbler.com/2.0/?format=json&api_key=" + this.api_key;
 		}
-		
+
 		this.read_ini = function (k) {
 			return utils.ReadINI(this.ini_file, "Last.fm", k);
 		}
-		
+
 		this.write_ini = function (k, v) {
 			utils.WriteINI(this.ini_file, "Last.fm", k, v);
 		}
-		
+
 		this.ok = function () {
 			switch (true) {
 			case this.api_key.length != 32:
@@ -85,7 +85,7 @@ _.mixin({
 				return true;
 			}
 		}
-		
+
 		this.scrobbler = null;
 		this.ini_file = folders.settings + "lastfm.ini";
 		this.api_key = this.read_ini("api_key");
