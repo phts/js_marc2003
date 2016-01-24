@@ -1,0 +1,42 @@
+// ==PREPROCESSOR==
+// @name "Last.fm Playcount"
+// @author "phts"
+// @import "%fb2k_profile_path%js_marc2003\js\lodash.min.js"
+// @import "%fb2k_profile_path%js_marc2003\js\helpers.js"
+// @import "%fb2k_profile_path%js_marc2003\js\panel.js"
+// @import "%fb2k_profile_path%js_marc2003\js\lastfm.js"
+// @import "%fb2k_profile_path%js_marc2003\js\scrobbler.js"
+// ==/PREPROCESSOR==
+
+var panel = new _.panel("Lastfm Playcount");
+var buttons = new _.buttons();
+var lastfm = new _.lastfm();
+
+var scrobbler = new _.scrobbler(0, 0, 32);
+scrobbler.update_button();
+
+function on_notify_data(name, data) {
+  lastfm.notify_data(name, data);
+  scrobbler.notify_data(name, data);
+}
+
+function on_size() {
+  panel.size();
+}
+
+function on_paint(gr) {
+  panel.paint(gr);
+  buttons.paint(gr);
+}
+
+function on_playback_new_track() {
+  scrobbler.playback_new_track();
+}
+
+function on_playback_time() {
+  scrobbler.playcount_sync();
+}
+
+function on_mouse_lbtn_up(x, y) {
+  buttons.buttons.scrobbler.lbtn_up(x, y);
+}
