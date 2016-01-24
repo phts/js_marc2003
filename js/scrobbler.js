@@ -33,6 +33,18 @@ _.mixin({
 			}
 		}
 
+		this.playcount_sync = function () {
+			this.time_elapsed++;
+			switch (true) {
+			case !this.enabled:
+				return;
+			case time_elapsed == this.target_time:
+				if (!this.loved_working && !this.playcount_working)
+					this.get("track.getInfo", fb.GetNowPlaying());
+				break;
+			}
+		}
+
 		this.post = function (method, metadb) {
 			if (!lastfm.ok())
 				return;
