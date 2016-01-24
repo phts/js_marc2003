@@ -275,8 +275,6 @@ _.mixin({
 							panel.console(this.r + ": " + artist + " - " + title + " " + playcount);
 							this.sql += "INSERT OR REPLACE INTO quicktag(url,subsong,fieldname,value) VALUES('" + url + "','-1','LASTFM_PLAYCOUNT_DB','" + playcount + "');\r\n";
 							this.r++;
-						} else {
-							this.page = this.pages;
 						}
 					}, this);
 					panel.console("Playcount: completed page " + this.page + " of " + this.pages);
