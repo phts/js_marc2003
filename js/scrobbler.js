@@ -91,7 +91,8 @@ _.mixin({
 				var track = _.tf("%title%", metadb);
 				if (!_.tagged(artist) || !_.tagged(track))
 					return;
-				url += "&username=" + lastfm.username + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track) + "&autocorrect=0&s=" + _.now();
+				//must use autocorrect now even when it is disabled on website
+				url += "&username=" + lastfm.username + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track) + "&autocorrect=1&s=" + _.now();
 				break;
 			case "user.getLovedTracks":
 				if (!this.loved_working)
