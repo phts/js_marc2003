@@ -212,8 +212,6 @@ _.mixin({
 						this.pages = data.lovedtracks["@attr"].totalPages;
 				}
 				data = _.get(data, "lovedtracks.track", []);
-				if (_.isUndefined(data.length))
-					data = [data];
 				if (data.length > 0) {
 					_.forEach(data, function (item) {
 						var artist = item.artist.name;
@@ -263,8 +261,6 @@ _.mixin({
 						this.pages = data.tracks["@attr"].totalPages;
 				}
 				data = _.get(data, "tracks.track", []);
-				if (_.isUndefined(data.length))
-					data = [data];
 				if (data.length > 0) {
 					_.forEach(data, function (item) {
 						var playcount = item.playcount;

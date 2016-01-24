@@ -514,8 +514,6 @@ _.mixin({
 					this.filename = panel.new_artist_folder(this.artist) + "lastfm." + this.lastfm_artist_methods[this.lastfm_artist_method].method + ".json";
 					if (_.isFile(this.filename)) {
 						var data = _.jsonParse(_.open(this.filename), this.lastfm_artist_methods[this.lastfm_artist_method].json);
-						if (_.isUndefined(data.length))
-							data = [data];
 						this.data = _.map(data, function (item) {
 							return {
 								name : item.name,
@@ -538,8 +536,6 @@ _.mixin({
 					this.filename = folders.lastfm + lastfm.username + "." + this.lastfm_charts_methods[this.lastfm_charts_method].method + "." + this.lastfm_charts_periods[this.lastfm_charts_period].period + ".json";
 					if (_.isFile(this.filename)) {
 						var data = _.jsonParse(_.open(this.filename), this.lastfm_charts_methods[this.lastfm_charts_method].json);
-						if (_.isUndefined(data.length))
-							data = [data];
 						for (var i = 0; i < data.length; i++) {
 							var name = this.lastfm_charts_method == 0 ? data[i].name : data[i].artist.name + " - " + data[i].name;
 							this.data[i] = {
@@ -728,8 +724,6 @@ _.mixin({
 					return panel.console(data.message);
 				if (this.lastfm_mode == 0) {
 					var temp = _.get(data, this.lastfm_artist_methods[this.lastfm_artist_method].json, []);
-					if (_.isUndefined(temp.length))
-						temp = [temp];
 					if (temp.length == 0)
 						return;
 					_.save(JSON.stringify(data), f, -1);
