@@ -218,7 +218,7 @@ _.mixin({
 					_.forEach(data, function (item) {
 						var artist = item.artist.name;
 						var title = item.name;
-						var url = _.tfe("l$crc32($lower(" + _.fbEscape(artist + title) + "))", true);
+						var url = _.tfe("$crc32($lower(" + _.fbEscape(artist + title) + "))", true);
 						panel.console(this.r + ": " + artist + " - " + title);
 						this.sql += "INSERT OR REPLACE INTO quicktag(url,subsong,fieldname,value) VALUES('" + url + "','-1','LASTFM_LOVED_DB','1');\r\n";
 						this.r++;
@@ -271,7 +271,7 @@ _.mixin({
 						if (playcount > 0) {
 							var artist = item.artist.name;
 							var title = item.name;
-							var url = _.tfe("p$crc32($lower(" + _.fbEscape(artist + title) + "))", true);
+							var url = _.tfe("$crc32($lower(" + _.fbEscape(artist + title) + "))", true);
 							panel.console(this.r + ": " + artist + " - " + title + " " + playcount);
 							this.sql += "INSERT OR REPLACE INTO quicktag(url,subsong,fieldname,value) VALUES('" + url + "','-1','LASTFM_PLAYCOUNT_DB','" + playcount + "');\r\n";
 							this.r++;
@@ -304,7 +304,7 @@ _.mixin({
 			panel.console("Attempting to update database...");
 			fb.RunContextCommandWithMetadb("Customdb Delete Playcount", metadb, 8);
 			window.SetTimeout(_.bind(function () {
-				var crc32 = _.tf("p$crc32($lower(%artist%%title%))", metadb);
+				var crc32 = _.tf("$crc32($lower(%artist%%title%))", metadb);
 				var cmd = _.shortPath(this.sqlite3_file) + " " + _.shortPath(this.db_file) + " \"INSERT INTO quicktag(url,subsong,fieldname,value) VALUES('" + crc32 + "','-1','LASTFM_PLAYCOUNT_DB','" + new_value + "');\"";
 				var attempt = 1;
 				while (_.tf("%LASTFM_PLAYCOUNT_DB%", metadb) != new_value && attempt <= 10) {
