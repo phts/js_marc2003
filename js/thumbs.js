@@ -508,11 +508,11 @@ _.mixin({
 		this.success = function (base) {
 			_(_.getElementsByTagName(this.xmlhttp.responsetext, "img"))
 				.filter(function (item) {
-					return item.src.indexOf("http://img2-ak.lst.fm/i/u/60x60") == 0;
+					return item.src.indexOf("http://img2-ak.lst.fm/i/u/avatar170s") == 0;
 				})
 				.take(this.download_limit)
 				.forEach(function (item) {
-					var url = item.src.replace("60x60", "ar0");
+					var url = item.src.replace("avatar170s", "ar0");
 					var filename = base + url.substring(url.lastIndexOf("/") + 1) + ".jpg";
 					_.runCmd("cscript //nologo " + _.q(folders.home + "download.vbs") + " " + _.q(url) + " " + _.q(filename), false);
 				})

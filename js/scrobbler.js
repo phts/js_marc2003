@@ -103,7 +103,8 @@ _.mixin({
 				var track = _.tf("%title%", metadb);
 				if (!_.tagged(artist) || !_.tagged(track))
 					return;
-				url += "&username=" + lastfm.username + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track) + "&autocorrect=0&s=" + _.now();
+				//must use autocorrect now even when it is disabled on website
+				url += "&username=" + lastfm.username + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track) + "&autocorrect=1&s=" + _.now();
 				break;
 			case "user.getLovedTracks":
 				if (!this.loved_working)
@@ -218,14 +219,9 @@ _.mixin({
 						this.loved_working = false;
 						return panel.console("Last.fm server error:\n\n" + data.message);
 					}
-					if (data.lovedtracks.totalPages == 0)
-						this.pages = 0;
-					else
-						this.pages = data.lovedtracks["@attr"].totalPages;
+					this.pages = data.lovedtracks["@attr"].totalPages;
 				}
 				data = _.get(data, "lovedtracks.track", []);
-				if (_.isUndefined(data.length))
-					data = [data];
 				if (data.length > 0) {
 					_.forEach(data, function (item) {
 						var artist = item.artist.name;
@@ -269,14 +265,9 @@ _.mixin({
 						this.playcount_working = false;
 						return panel.console("Last.fm server error:\n\n" + data.message);
 					}
-					if (data.toptracks.totalPages == 0)
-						this.pages = 0;
-					else
-						this.pages = data.toptracks["@attr"].totalPages;
+					this.pages = data.toptracks["@attr"].totalPages;
 				}
 				data = _.get(data, "toptracks.track", []);
-				if (_.isUndefined(data.length))
-					data = [data];
 				if (data.length > 0) {
 					_.forEach(data, function (item) {
 						var playcount = item.playcount;
