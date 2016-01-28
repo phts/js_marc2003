@@ -38,7 +38,7 @@ _.mixin({
 			switch (true) {
 			case !this.enabled:
 				return;
-			case time_elapsed == this.target_time:
+			case this.time_elapsed == this.target_time:
 				if (!this.loved_working && !this.playcount_working)
 					this.get("track.getInfo", fb.GetNowPlaying());
 				break;
