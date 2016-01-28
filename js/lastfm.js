@@ -55,6 +55,15 @@ _.mixin({
 			}
 		}
 
+		this.update_api_key = function () {
+			this.api_key = _.input("Enter your Last.fm API key", panel.name, this.api_key);
+			if (this.api_key.length > 0) {
+				this.write_ini("api_key", this.api_key);
+				window.NotifyOthers("2K3.NOTIFY.LASTFM", "update");
+				this.notify_data("2K3.NOTIFY.LASTFM", "update");
+			}
+		}
+
 		this.get_base_url = function () {
 			return "http://ws.audioscrobbler.com/2.0/?format=json&api_key=" + this.api_key;
 		}
