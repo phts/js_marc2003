@@ -387,6 +387,7 @@ _.mixin({
 			var flag = working || lastfm.username.length == 0 ? MF_GRAYED : MF_STRING;
 			m.AppendMenuItem(working ? MF_GRAYED : MF_STRING, 1, "Last.fm username...");
 			m.AppendMenuItem(flag, 2, "Last.fm password...");
+			m.AppendMenuItem(flag, 8, "Last.fm API key...");
 			m.AppendMenuSeparator();
 			m.AppendMenuItem(flag, 3, "Enabled");
 			m.CheckMenuItem(3, this.enabled);
@@ -421,6 +422,9 @@ _.mixin({
 				break;
 			case 7:
 				_.browser("http://www.last.fm/user/" + lastfm.username);
+				break;
+			case 8:
+				lastfm.update_api_key();
 				break;
 			}
 			m.Dispose();
