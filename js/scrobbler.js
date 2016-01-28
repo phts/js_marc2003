@@ -365,8 +365,8 @@ _.mixin({
 			case lastfm.username.length == 0:
 				var tooltip = "Click to set your username.";
 				break;
-			case lastfm.sk.length != 32:
-				var tooltip = "Click to set your password.";
+			case lastfm.api_key.length != 32:
+				var tooltip = "Click to set your API key.";
 				break;
 			case !this.enabled:
 				var tooltip = "Click to enable.";
