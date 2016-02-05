@@ -23,7 +23,7 @@ _.mixin({
 					panel.console("Skipping... Track not in Media Library.");
 				} else if (fb.PlaybackLength < this.min_length) {
 					panel.console("Not submitting. Track too short.");
-					//if not importing, still check to see if a track is loved even if it is too short to scrobble
+					// still check to see if a track is loved even if it is too short to scrobble
 					this.get("track.getInfo", fb.GetNowPlaying());
 				} else {
 					this.post("track.scrobble", fb.GetNowPlaying());
