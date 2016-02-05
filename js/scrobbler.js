@@ -24,8 +24,7 @@ _.mixin({
 				} else if (fb.PlaybackLength < this.min_length) {
 					panel.console("Not submitting. Track too short.");
 					//if not importing, still check to see if a track is loved even if it is too short to scrobble
-					if (!this.loved_working && !this.playcount_working)
-						this.get("track.getInfo", fb.GetNowPlaying());
+					this.get("track.getInfo", fb.GetNowPlaying());
 				} else {
 					this.post("track.scrobble", fb.GetNowPlaying());
 				}
@@ -87,6 +86,8 @@ _.mixin({
 			var url = lastfm.get_base_url() + "&method=" + method;
 			switch (method) {
 			case "track.getInfo":
+				if (this.loved_working || this.playcount_working)
+					return;
 				var artist = _.tf("%artist%", metadb);
 				var track = _.tf("%title%", metadb);
 				if (!_.tagged(artist) || !_.tagged(track))
