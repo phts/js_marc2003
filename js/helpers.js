@@ -210,9 +210,6 @@ _.mixin({
 		if (_.isFile(file))
 			WshShell.Run("explorer /select," + _.q(file));
 	},
-	samples : function (metadb) {
-		return _.formatNumber(_.tf("['('%length_samples% samples')']", metadb), " ");
-	},
 	fbEscape : function (value) {
 		return value.replace(/'/g, "''").replace(/[\(\)\[\],$]/g, "'$&'");
 	},

@@ -1043,10 +1043,11 @@ _.mixin({
 				
 				this.add_properties = function (f) {
 					this.add();
-					var duration = utils.FormatDuration(panel.metadb.Length);
+					var duration = utils.FormatDuration(Math.max(0, panel.metadb.Length));
+					var samples = _.formatNumber(_.tf("%length_samples%", panel.metadb), " ");
 					this.data.push({
 						name : "DURATION",
-						value : duration + " " + _.samples(panel.metadb),
+						value : duration + " (" + samples + " samples)",
 						query : "%length% IS " + duration
 					});
 					for (var i = 0; i < f.InfoCount; i++) {
