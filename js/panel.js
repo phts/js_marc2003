@@ -125,10 +125,10 @@ _.mixin({
 			this.s11 = window.CreatePopupMenu();
 			this.s12 = window.CreatePopupMenu();
 			this.s13 = window.CreatePopupMenu();
-			//panel 1-999
-			//album art 2000-2999
-			//list 3000-3999
-			//text 5000-5999
+			// panel 1-999
+			// album art 2000-2999
+			// list 3000-3999
+			// text 5000-5999
 			object && object.rbtn_up(x, y);
 			if (this.list_objects.length + this.text_objects.length > 0) {
 				this.fonts_menu.AppendMenuItem(MF_STRING, 10, 10);
@@ -259,8 +259,8 @@ _.mixin({
 		}
 		this.colours_changed();
 		this.font_changed();
-		this.list_objects = []; //these will be populated automatically
-		this.text_objects = []; //and used inside font_changed
+		this.list_objects = []; // these will be populated automatically
+		this.text_objects = []; // and used inside font_changed
 		window.DlgCode = DLGC_WANTALLKEYS;
 	}
 });

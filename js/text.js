@@ -33,7 +33,7 @@ _.mixin({
 					if (_.isFile(this.filename)) {
 						var data = _.jsonParse(_.open(this.filename));
 						this.content = data[0];
-						//content is static so only check for updates if no review found previously
+						// content is static so only check for updates if no review found previously
 						if (this.content.length == 0 && _.fileExpired(this.filename, ONE_DAY))
 							this.get();
 					} else {
@@ -64,7 +64,7 @@ _.mixin({
 						return;
 					this.filename = temp_filename;
 					this.content = "";
-					if (_.isFolder(this.filename)) { //yes really!
+					if (_.isFolder(this.filename)) { // yes really!
 						var folder = this.filename + "\\";
 						var files = _.getFiles(folder, this.exts);
 						this.content = _.open(files[0]);
@@ -390,7 +390,7 @@ _.mixin({
 			}
 		}
 		
-		panel.text_objects.push(this); //required for font change shiznit
+		panel.text_objects.push(this);
 		this.mode = mode;
 		this.x = x;
 		this.y = y;

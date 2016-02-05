@@ -701,7 +701,7 @@ _.mixin({
 		this.success = function (f) {
 			var data = _.jsonParse(this.xmlhttp.responsetext);
 			switch (true) {
-			case this.mode == "musicbrainz" && this.mb_mode == 0:
+			case this.mode == "musicbrainz" && this.mb_mode == 0: // releases
 				var max_offset = Math.min(500, data["release-group-count"] || 0) - 100;
 				var rg = data["release-groups"] || [];
 				if (rg.length > 0)
@@ -714,7 +714,7 @@ _.mixin({
 					this.reset()
 				}
 				break;
-			case this.mode == "musicbrainz": //links
+			case this.mode == "musicbrainz": // links
 			case this.mode == "echonest":
 				_.save(JSON.stringify(data), f);
 				this.reset();
@@ -894,7 +894,7 @@ _.mixin({
 				_.createFolder(folders.artists);
 				_.createFolder(folders.settings);
 				this.ua = lastfm.ua;
-				this.lastfm_mode = window.GetProperty("2K3.LIST.LASTFM.MODE", 0); //0 artist 1 charts 2 recommendations 3 recent tracks
+				this.lastfm_mode = window.GetProperty("2K3.LIST.LASTFM.MODE", 0); // 0 artist 1 charts 2 recommendations 3 recent tracks
 				this.lastfm_artist_methods = [{
 						method : "artist.getSimilar",
 						json : "similarartists.artist",
@@ -979,7 +979,7 @@ _.mixin({
 				_.createFolder(folders.data);
 				_.createFolder(folders.artists);
 				this.ua = "foo_jscript_panel_musicbrainz +https://github.com/19379";
-				this.mb_mode = window.GetProperty("2K3.LIST.MUSICBRAINZ.MODE", 0); //0 releases 1 links
+				this.mb_mode = window.GetProperty("2K3.LIST.MUSICBRAINZ.MODE", 0); // 0 releases 1 links
 				this.mb_icons = window.GetProperty("2K3.LIST.MUSICBRAINZ.SHOW.ICONS", true);
 				this.mb_id = "";
 				this.mb_images = {
@@ -1096,7 +1096,7 @@ _.mixin({
 			}
 		}
 		
-		panel.list_objects.push(this); //required for font change shiznit
+		panel.list_objects.push(this);
 		this.mode = mode;
 		this.x = x;
 		this.y = y;

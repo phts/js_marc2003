@@ -58,7 +58,7 @@ _.mixin({
 			panel.console("Submitting '" + tags.artist + " - " + tags.title + "'");
 			
 			if (this.show_data) {
-				//spam the console!
+				// spam the console!
 				fb.trace(JSON.stringify(data, null, "    "));
 			}
 			

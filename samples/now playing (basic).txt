@@ -10,11 +10,11 @@
 
 //the track info section displays 3 lines of title formatted text. you can customise that here/////////////////////////////////////////////
 var line1 = {
-	text: "", //leave this blank
-	tf: "%artist%", //enter any title formatting
-	font: _.gdiFont("Segoe UI", 20, 1), //font name, size, style. 1 means bold and 0 is normal.
-	colour: _.RGB(240, 240, 240), //colour
-	y: 0 //change this value to move text up or down.
+	text: "", // leave this blank
+	tf: "%artist%", // enter any title formatting
+	font: _.gdiFont("Segoe UI", 20, 1), // font name, size, style. 1 means bold and 0 is normal.
+	colour: _.RGB(240, 240, 240), // colour
+	y: 0 // change this value to move text up or down.
 }
 var line2 = {
 	text: "",
