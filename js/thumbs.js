@@ -507,9 +507,7 @@ _.mixin({
 		
 		this.success = function (base) {
 			_(_.getElementsByTagName(this.xmlhttp.responsetext, "img"))
-				.filter(function (item) {
-					return item.src.indexOf("http://img2-ak.lst.fm/i/u/avatar170s") == 0;
-				})
+				.filter({className : "image-list-image"})
 				.take(this.download_limit)
 				.forEach(function (item) {
 					var url = item.src.replace("avatar170s", "ar0");
