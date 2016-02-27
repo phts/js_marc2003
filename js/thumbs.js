@@ -230,13 +230,13 @@ _.mixin({
 			this.index = this.images.length;
 			switch (true) {
 			case !this.trace(x, y):
-				window.SetCursor(IDC_ARROW);
-				return;
+				break;
 			case this.modes[this.mode] == "grid":
 				if (this.overlay)
 					return window.SetCursor(this.close_btn.move(x, y) ? IDC_HAND : IDC_ARROW);
 				var temp = _.floor(x / this.px);
-				this.index = temp < this.columns ? temp + ((_.floor(y / this.px) + this.offset) * this.columns) : this.images.length;
+				if (temp < this.columns)
+					this.index = temp + ((_.floor(y / this.px) + this.offset) * this.columns);
 				break;
 			case this.modes[this.mode] == "left":
 			case this.modes[this.mode] == "right":
