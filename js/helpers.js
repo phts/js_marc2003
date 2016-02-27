@@ -56,7 +56,6 @@ folders.data = fb.ProfilePath + "wsh_data\\";
 folders.artists = folders.data + "artists\\";
 folders.lastfm = folders.data + "lastfm\\";
 folders.docs = fb.ComponentPath + "docs\\";
-folders.git = drive + "Applications\\PortableGit\\";
 
 var np_exe = drive + "Applications\\Notepad++\\notepad++.exe";
 var ff_exe = WshShell.ExpandEnvironmentStrings("%USERPROFILE%") + "\\Documents\\FirefoxPortable\\FirefoxPortable.exe";
@@ -604,10 +603,6 @@ _.mixin({
 			m1.AppendMenuItem(MF_STRING, 50, "Notepad++");
 			m1.AppendMenuSeparator();
 		}
-		if (_.isFolder(folders.git)) {
-			m1.AppendMenuItem(MF_STRING, 51, "Git Folder");
-			m1.AppendMenuSeparator();
-		}
 		m1.AppendMenuItem(MF_STRING, 70, "Configure...");
 		var idx = m1.TrackPopupMenu(x, y, flags);
 		switch (true) {
@@ -621,9 +616,6 @@ _.mixin({
 			break;
 		case idx == 50:
 			_.run(np_exe);
-			break;
-		case idx == 51:
-			_.run(folders.git);
 			break;
 		case idx == 70:
 			window.ShowConfigure();
