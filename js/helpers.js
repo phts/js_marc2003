@@ -213,7 +213,7 @@ _.mixin({
 		return value.replace(/'/g, "''").replace(/[\(\)\[\],$]/g, "'$&'");
 	},
 	fbSanitise : function (value) {
-		return value.replace(/[\/\\|:]/g, "-").replace(/\*/g, "x").replace(/"/g, "''").replace(/[<>]/g, "_").replace(/\?/g, "");
+		return value.replace(/[\/\\|:]/g, "-").replace(/\*/g, "x").replace(/"/g, "''").replace(/[<>]/g, "_").replace(/\?/g, "").replace(/(?! )\s/g, "");
 	},
 	mbEscape : function (value) {
 		return value.replace(/[+!(){}\[\]^"~*?:\\\/-]/g, "\\$&");
