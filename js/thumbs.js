@@ -13,7 +13,6 @@ _.mixin({
 				this.h = 0;
 				break;
 			case this.modes[this.mode] == "grid":
-				this.overlay = false; // don't use enable_overlay because it uses window.Repaint which we shouldn't do from on_size
 				this.x = 0;
 				this.y = 0;
 				this.w = panel.w;
