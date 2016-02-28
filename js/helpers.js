@@ -58,7 +58,6 @@ folders.lastfm = folders.data + "lastfm\\";
 folders.docs = fb.ComponentPath + "docs\\";
 
 var np_exe = drive + "Applications\\Notepad++\\notepad++.exe";
-var ff_exe = WshShell.ExpandEnvironmentStrings("%USERPROFILE%") + "\\Documents\\FirefoxPortable\\FirefoxPortable.exe";
 
 var guifx = {
 	font : "Guifx v2 Transports",
@@ -200,10 +199,7 @@ _.mixin({
 		}
 	},
 	browser : function (url) {
-		if (_.isFile(ff_exe))
-			_.run(ff_exe, url);
-		else
-			_.run(url)
+		_.run(url)
 	},
 	explorer : function (file) {
 		if (_.isFile(file))
