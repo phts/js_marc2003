@@ -45,8 +45,6 @@ vb.Language = "VBScript";
 var tooltip = window.CreateTooltip(window.GetProperty("2K3.TOOLTIP.FONT.NAME", "Segoe UI"), window.GetProperty("2K3.TOOLTIP.FONT.SIZE", 12), window.GetProperty("2K3.TOOLTIP.FONT.STYLE", 0));
 tooltip.SetMaxWidth(800);
 
-var drive = fb.ProfilePath.substring(0, 3);
-
 var folders = {};
 folders.home = fb.ProfilePath + "js_marc2003\\";
 folders.js = folders.home + "js\\";
@@ -57,7 +55,7 @@ folders.artists = folders.data + "artists\\";
 folders.lastfm = folders.data + "lastfm\\";
 folders.docs = fb.ComponentPath + "docs\\";
 
-var np_exe = drive + "Applications\\Notepad++\\notepad++.exe";
+var np_exe = fb.ProfilePath.substring(0, 3) + "Applications\\Notepad++\\notepad++.exe";
 
 var guifx = {
 	font : "Guifx v2 Transports",
