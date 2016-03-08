@@ -61,8 +61,6 @@ function on_mouse_lbtn_dblclk() {
 }
 
 function on_mouse_rbtn_up(x, y) {
-	if (utils.IsKeyPressed(VK_SHIFT))
-		return false;
 	var m = window.CreatePopupMenu();
 	var c = fb.CreateContextMenuManager();
 	if (fb.IsPlaying) {

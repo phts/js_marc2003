@@ -115,8 +115,6 @@ _.mixin({
 		}
 		
 		this.rbtn_up = function (x, y, object) {
-			if (utils.IsKeyPressed(VK_SHIFT))
-				return false;
 			this.m = window.CreatePopupMenu();
 			this.fonts_menu = window.CreatePopupMenu();
 			this.background_menu = window.CreatePopupMenu();
