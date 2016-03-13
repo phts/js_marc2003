@@ -70,6 +70,10 @@ function on_playback_new_track() {
 	window.Repaint();
 }
 
+function on_playback_edited() {
+	window.Repaint();
+}
+
 function on_playback_seek() {
 	seekbar.playback_seek();
 }
