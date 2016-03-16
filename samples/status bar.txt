@@ -73,15 +73,15 @@ function on_mouse_rbtn_up(x, y) {
 	m.AppendMenuSeparator();
 	m.AppendMenuItem(MF_STRING, 10001, "Configure...");
 	var idx = m.TrackPopupMenu(x, y);
-	switch (true) {
-	case idx == 0:
+	switch (idx) {
+	case 0:
 		break;
-	case idx == 10000:
+	case 10000:
 		show_volume = !show_volume;
 		window.SetProperty("2K3.STATUS.SHOW.VOLUME", show_volume);
 		window.Repaint();
 		break;
-	case idx == 10001:
+	case 10001:
 		window.ShowConfigure();
 		break;
 	default:
