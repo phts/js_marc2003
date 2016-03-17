@@ -315,14 +315,13 @@ _.mixin({
 							.forEach(function (item) {
 								var divs = item.getElementsByTagName("div");
 								var album = divs[2].getElementsByTagName("a")[0].innerText;
-								var url = divs[2].getElementsByTagName("a")[0].href;
 								var temp = divs[3].getElementsByTagName("a");
 								if (temp.length > 0)
 									var artist = temp[0].innerText;
 								else
 									var artist = "various artists";
 								if (this.is_match(artist, album)) {
-									this.allmusic_url = url;
+									this.allmusic_url = divs[2].getElementsByTagName("a")[0].href;
 									return false;
 								}
 							}, this)
