@@ -100,7 +100,7 @@ _.mixin({
 			var f = metadb.GetFileInfo();
 			for (var i = 0; i < f.MetaCount; i++) {
 				var name = f.MetaName(i).toLowerCase();
-				if (!this.submit_genres && name == "genre")
+				if (name == "genre" && !this.submit_genres)
 					continue;
 				
 				if (_.isString(this.mb_names[name]))
@@ -133,7 +133,7 @@ _.mixin({
 			m.CheckMenuItem(4, this.show_data)
 			m.AppendMenuItem(flag, 5, "Save data to external file");
 			m.CheckMenuItem(5, this.log_data);
-			m.AppendMenuItem(flag, 6, "Submit library tracks only");
+			m.AppendMenuItem(flag, 6, "Submit Media Library tracks only");
 			m.CheckMenuItem(6, this.library);
 			m.AppendMenuItem(flag, 7, "Submit genre tags");
 			m.CheckMenuItem(7, this.submit_genres);
@@ -192,7 +192,7 @@ _.mixin({
 		this.token = utils.ReadINI(this.ini_file, "Listenbrainz", "token");
 		this.username = utils.ReadINI(this.ini_file, "Listenbrainz", "username");
 		this.show_data = window.GetProperty("2K3.LISTENBRAINZ.SHOW.DATA", false);
-		this.log_data = window.GetProperty("2K3.LISTENBRAINZ.LOG.DATA", true);
+		this.log_data = window.GetProperty("2K3.LISTENBRAINZ.LOG.DATA", false);
 		this.library = window.GetProperty("2K3.LISTENBRAINZ.LIBRARY", false);
 		this.submit_genres = window.GetProperty("2K3.LISTENBRAINZ.SUBMIT.GENRES", true);
 		this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
