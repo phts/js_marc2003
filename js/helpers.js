@@ -93,6 +93,12 @@ var ha_links = [
 ];
 
 _.mixin({
+	dispose : function (o) {
+		try {
+			o.Dispose();
+		} catch (e) {
+		}
+	},
 	q : function (value) {
 		return "\"" + value + "\"";
 	},

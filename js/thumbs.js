@@ -453,12 +453,7 @@ _.mixin({
 		
 		this.update = function () {
 			this.image = 0;
-			_.forEach(this.images, function (item) {
-				try {
-					item.Dispose();
-				} catch (e) {
-				}
-			});
+			_.map(this.images, _.dispose);
 			this.files = _.getFiles(this.folder, this.exts, this.sort == 0);
 			if (this.source == 0 && this.files.length > 1) {
 				this.default_file = this.folder + utils.ReadINI(this.ini_file, "Defaults", _.q(_.fbSanitise(this.artist)));
@@ -542,7 +537,7 @@ _.mixin({
 		this.aspect = window.GetProperty("2K3.THUMBS.ASPECT", image.crop_top);
 		this.custom_folder_tf = window.GetProperty("2K3.THUMBS.CUSTOM.FOLDER.TF", "$directory_path(%path%)");
 		this.px = window.GetProperty("2K3.THUMBS.PX", 75);
-		this.sort = window.GetProperty("2k3.THUMBS.SORT", 0); // 0 newest first 1 a-z
+		this.sort = window.GetProperty("2K3.THUMBS.SORT", 0); // 0 newest first 1 a-z
 		this.source = window.GetProperty("2K3.THUMBS.SOURCE", 0); // 0 last.fm 1 custom folder
 		this.download_limit = window.GetProperty("2K3.THUMBS.DOWNLOAD.LIMIT", 9);
 		this.ini_file = folders.settings + "thumbs.ini";
