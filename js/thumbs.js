@@ -7,7 +7,7 @@ _.mixin({
 			switch (true) {
 			case panel.w < this.px || panel.h < this.px || this.modes[this.mode] == "off":
 				this.nc = true;
-				this.img && this.img.Dispose();
+				_.dispose(this.img);
 				this.img = null;
 				this.w = 0;
 				this.h = 0;
@@ -24,7 +24,7 @@ _.mixin({
 				this.img_rows = _.ceil(this.images.length / this.columns);
 				if (this.nc && this.images.length > 0) {
 					this.nc = false;
-					this.img && this.img.Dispose();
+					_.dispose(this.img);
 					this.img = null;
 					this.img = gdi.CreateImage(Math.min(this.columns, this.images.length) * this.px, this.img_rows * this.px);
 					var temp_gr = this.img.GetGraphics();
@@ -48,7 +48,7 @@ _.mixin({
 				this.rows = _.ceil(this.h / this.px);
 				if (this.nc && this.images.length > 0) {
 					this.nc = false;
-					this.img && this.img.Dispose();
+					_.dispose(this.img);
 					this.img = null;
 					this.img = gdi.CreateImage(this.px, this.px * this.images.length);
 					var temp_gr = this.img.GetGraphics();
@@ -68,7 +68,7 @@ _.mixin({
 				this.columns = _.ceil(this.w / this.px);
 				if (this.nc && this.images.length > 0) {
 					this.nc = false;
-					this.img && this.img.Dispose();
+					_.dispose(this.img);
 					this.img = null;
 					this.img = gdi.CreateImage(this.px * this.images.length, this.px);
 					var temp_gr = this.img.GetGraphics();
