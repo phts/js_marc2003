@@ -286,7 +286,8 @@ _.mixin({
 			panel.m.AppendMenuItem(MF_STRING, 4001, "Custom folder");
 			panel.m.CheckMenuRadioItem(4000, 4001, this.source + 4000);
 			panel.m.AppendMenuSeparator();
-			if (this.source == 0) { // last.fm
+			switch (this.source) {
+			case 0: // last.fm
 				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4005, "Download now");
 				panel.m.AppendMenuItem(MF_STRING, 4006, "Automatic download");
 				panel.m.CheckMenuItem(4006, this.auto_download);
@@ -295,9 +296,11 @@ _.mixin({
 				});
 				panel.s10.CheckMenuRadioItem(_.first(this.download_limits) + 4010, _.last(this.download_limits) + 4010, this.download_limit + 4010);
 				panel.s10.AppendTo(panel.m, MF_STRING, "Limit");
-			} else { // custom folder
+				break;
+			case 1: // custom folder
 				panel.m.AppendMenuItem(MF_STRING, 4040, "Refresh");
 				panel.m.AppendMenuItem(MF_STRING, 4041, "Set custom folder...");
+				break;
 			}
 			panel.m.AppendMenuSeparator();
 			_.forEach(this.modes, function (item, i) {
