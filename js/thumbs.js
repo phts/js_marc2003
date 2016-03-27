@@ -290,13 +290,10 @@ _.mixin({
 				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4005, "Download now");
 				panel.m.AppendMenuItem(MF_STRING, 4006, "Automatic download");
 				panel.m.CheckMenuItem(4006, this.auto_download);
-				panel.s10.AppendMenuItem(MF_STRING, 4011, "1");
-				panel.s10.AppendMenuItem(MF_STRING, 4013, "3");
-				panel.s10.AppendMenuItem(MF_STRING, 4015, "5");
-				panel.s10.AppendMenuItem(MF_STRING, 4020, "10");
-				panel.s10.AppendMenuItem(MF_STRING, 4025, "15");
-				panel.s10.AppendMenuItem(MF_STRING, 4030, "20");
-				panel.s10.CheckMenuRadioItem(4011, 4030, this.download_limit + 4010);
+				_.forEach(this.download_limits, function (item) {
+					panel.s10.AppendMenuItem(MF_STRING, item + 4010, item);
+				});
+				panel.s10.CheckMenuRadioItem(_.first(this.download_limits) + 4010, _.last(this.download_limits) + 4010, this.download_limit + 4010);
 				panel.s10.AppendTo(panel.m, MF_STRING, "Limit");
 			} else { // custom folder
 				panel.m.AppendMenuItem(MF_STRING, 4040, "Refresh");
@@ -312,7 +309,7 @@ _.mixin({
 			_.forEach(this.pxs, function (item) {
 				panel.s11.AppendMenuItem(flag, item + 4100, item + "px");
 			});
-			panel.s11.CheckMenuRadioItem(4175, 4400, this.px + 4100);
+			panel.s11.CheckMenuRadioItem(_.first(this.pxs) + 4100, _.last(this.pxs) + 4100, this.px + 4100);
 			panel.s11.AppendTo(panel.m, MF_STRING, "Thumbs");
 			panel.m.AppendMenuSeparator();
 			panel.s12.AppendMenuItem(MF_STRING, 4060, "Off");
@@ -549,6 +546,7 @@ _.mixin({
 		this.images = [];
 		this.modes = ["grid", "left", "right", "top", "bottom", "off"];
 		this.pxs = [75, 100, 150, 200, 250, 300];
+		this.download_limits = [1, 3, 5, 10, 15, 20];
 		this.mode = window.GetProperty("2K3.THUMBS.MODE", 4); // bottom
 		this.cycle = window.GetProperty("2K3.THUMBS.CYCLE", 0);
 		this.aspect = window.GetProperty("2K3.THUMBS.ASPECT", image.crop_top);
