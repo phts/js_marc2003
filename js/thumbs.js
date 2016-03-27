@@ -149,6 +149,15 @@ _.mixin({
 						return;
 					this.artist = temp_artist;
 					this.folder = panel.new_artist_folder(this.artist);
+					if (this.auto_download && _.getFiles(this.folder, this.exts).length == 0) {
+						var a =  _.q(_.fbSanitise(this.artist));
+						var n = _.round(_.now() / 1000);
+						var t = utils.ReadINI(this.ini_file, "Timestamps", a, 0);
+						if (n - t > 3600) {
+							utils.WriteINI(this.ini_file, "Timestamps", a, n);
+							this.download();
+						}
+					}
 					break;
 				case 1: // custom folder
 					var temp_folder = panel.tf(this.custom_folder_tf.replace("%profile%", fb.ProfilePath));
@@ -278,8 +287,9 @@ _.mixin({
 			panel.m.CheckMenuRadioItem(4000, 4001, this.source + 4000);
 			panel.m.AppendMenuSeparator();
 			if (this.source == 0) { // last.fm
-				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4010, "Download artist art from Last.fm");
-				panel.m.AppendMenuSeparator();
+				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4005, "Download now");
+				panel.m.AppendMenuItem(MF_STRING, 4006, "Automatic download");
+				panel.m.CheckMenuItem(4006, this.auto_download);
 				panel.s10.AppendMenuItem(MF_STRING, 4011, "1");
 				panel.s10.AppendMenuItem(MF_STRING, 4013, "3");
 				panel.s10.AppendMenuItem(MF_STRING, 4015, "5");
@@ -289,9 +299,8 @@ _.mixin({
 				panel.s10.CheckMenuRadioItem(4011, 4030, this.download_limit + 4010);
 				panel.s10.AppendTo(panel.m, MF_STRING, "Limit");
 			} else { // custom folder
-				panel.m.AppendMenuItem(MF_STRING, 4040, "Set custom folder...");
-				panel.m.AppendMenuSeparator();
-				panel.m.AppendMenuItem(MF_STRING, 4041, "Refresh");
+				panel.m.AppendMenuItem(MF_STRING, 4040, "Refresh");
+				panel.m.AppendMenuItem(MF_STRING, 4041, "Set custom folder...");
 			}
 			panel.m.AppendMenuSeparator();
 			_.forEach(this.modes, function (item, i) {
@@ -350,8 +359,12 @@ _.mixin({
 				this.folder = "";
 				panel.item_focus_change();
 				break;
-			case 4010:
+			case 4005:
 				this.download();
+				break;
+			case 4006:
+				this.auto_download = !this.auto_download;
+				window.SetProperty("2K3.THUMBS.AUTO.DOWNLOAD", this.auto_download);
 				break;
 			case 4011:
 			case 4013:
@@ -363,15 +376,15 @@ _.mixin({
 				window.SetProperty("2K3.THUMBS.NEW.DOWNLOAD.LIMIT", this.download_limit);
 				break;
 			case 4040:
+				this.update();
+				break;
+			case 4041:
 				this.custom_folder_tf = _.input("Enter title formatting or an absolute path to a folder.\n\n%profile% will resolve to your foobar2000 profile folder or the program folder if using portable mode.", panel.name, this.custom_folder_tf);
 				if (this.custom_folder_tf == "")
 					this.custom_folder_tf = "$directory_path(%path%)";
 				window.SetProperty("2K3.THUMBS.CUSTOM.FOLDER.TF", this.custom_folder_tf);
 				this.folder = "";
 				panel.item_focus_change();
-				break;
-			case 4041:
-				this.update();
 				break;
 			case 4050:
 			case 4051:
@@ -544,6 +557,7 @@ _.mixin({
 		this.sort = window.GetProperty("2K3.THUMBS.SORT", 0); // 0 newest first 1 a-z
 		this.source = window.GetProperty("2K3.THUMBS.SOURCE", 0); // 0 last.fm 1 custom folder
 		this.download_limit = window.GetProperty("2K3.THUMBS.NEW.DOWNLOAD.LIMIT", 10);
+		this.auto_download = window.GetProperty("2K3.THUMBS.AUTO.DOWNLOAD", false);
 		this.ini_file = folders.settings + "thumbs.ini";
 		this.exts = "jpg|jpeg|png|gif";
 		this.folder = "";
