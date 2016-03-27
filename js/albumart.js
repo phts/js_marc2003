@@ -23,7 +23,7 @@ _.mixin({
 		
 		this.metadb_changed = function () {
 			if (panel.metadb) {
-				this.img && this.img.Dispose();
+				_.dispose(this.img);
 				this.tooltip = "";
 				this.path = "";
 				this.img = utils.GetAlbumArtV2(panel.metadb, this.id);

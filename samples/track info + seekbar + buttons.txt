@@ -65,7 +65,7 @@ function on_playback_new_track() {
 	var metadb = fb.GetNowPlaying();
 	if (!metadb)
 		return;
-	img && img.Dispose();
+	_.dispose(img);
 	img = utils.GetAlbumArtV2(metadb, 0);
 	window.Repaint();
 }
