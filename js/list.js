@@ -579,6 +579,7 @@ _.mixin({
 				if (this.mb_mode == 0) {
 					this.mb_data = [];
 					this.mb_offset = 0;
+					this.attempt = 1;
 					this.filename = panel.new_artist_folder(this.artist) + "musicbrainz.releases." + this.mb_id + ".json";
 					if (_.isFile(this.filename)) {
 						var data = _(_.jsonParse(_.open(this.filename)))
@@ -691,8 +692,12 @@ _.mixin({
 					if (this.xmlhttp.status == 200) {
 						this.success(f);
 					} else {
-						panel.console("HTTP error: " + this.xmlhttp.status);
-						this.xmlhttp.responsetext && fb.trace(this.xmlhttp.responsetext);
+						if (this.mode == "musicbrainz" && this.attempt < 5) {
+							window.SetTimeout(this.mb_retry, 1000);
+						} else {
+							panel.console("HTTP error: " + this.xmlhttp.status);
+							this.xmlhttp.responsetext && fb.trace(this.xmlhttp.responsetext);
+						}
 					}
 				}
 			}, this);
@@ -955,6 +960,12 @@ _.mixin({
 					this.update();
 				break;
 			case "musicbrainz":
+				this.mb_retry = _.bind(function () {
+					panel.console("Retrying...");
+					this.attempt++;
+					this.get();
+				}, this),
+				
 				this.mb_parse_urls = _.bind(function (item) {
 					var url = decodeURIComponent(item.url.resource);
 					var image = "external";
