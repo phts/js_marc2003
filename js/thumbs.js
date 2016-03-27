@@ -282,9 +282,11 @@ _.mixin({
 				panel.m.AppendMenuSeparator();
 				panel.s10.AppendMenuItem(MF_STRING, 4011, "1");
 				panel.s10.AppendMenuItem(MF_STRING, 4013, "3");
-				panel.s10.AppendMenuItem(MF_STRING, 4016, "6");
-				panel.s10.AppendMenuItem(MF_STRING, 4019, "9");
-				panel.s10.CheckMenuRadioItem(4011, 4019, this.download_limit + 4010);
+				panel.s10.AppendMenuItem(MF_STRING, 4015, "5");
+				panel.s10.AppendMenuItem(MF_STRING, 4020, "10");
+				panel.s10.AppendMenuItem(MF_STRING, 4025, "15");
+				panel.s10.AppendMenuItem(MF_STRING, 4030, "20");
+				panel.s10.CheckMenuRadioItem(4011, 4030, this.download_limit + 4010);
 				panel.s10.AppendTo(panel.m, MF_STRING, "Limit");
 			} else { // custom folder
 				panel.m.AppendMenuItem(MF_STRING, 4040, "Set custom folder...");
@@ -353,10 +355,12 @@ _.mixin({
 				break;
 			case 4011:
 			case 4013:
-			case 4016:
-			case 4019:
+			case 4015:
+			case 4020:
+			case 4025:
+			case 4030:
 				this.download_limit = idx - 4010;
-				window.SetProperty("2K3.THUMBS.DOWNLOAD.LIMIT", this.download_limit);
+				window.SetProperty("2K3.THUMBS.NEW.DOWNLOAD.LIMIT", this.download_limit);
 				break;
 			case 4040:
 				this.custom_folder_tf = _.input("Enter title formatting or an absolute path to a folder.\n\n%profile% will resolve to your foobar2000 profile folder or the program folder if using portable mode.", panel.name, this.custom_folder_tf);
@@ -539,7 +543,7 @@ _.mixin({
 		this.px = window.GetProperty("2K3.THUMBS.PX", 75);
 		this.sort = window.GetProperty("2K3.THUMBS.SORT", 0); // 0 newest first 1 a-z
 		this.source = window.GetProperty("2K3.THUMBS.SOURCE", 0); // 0 last.fm 1 custom folder
-		this.download_limit = window.GetProperty("2K3.THUMBS.DOWNLOAD.LIMIT", 9);
+		this.download_limit = window.GetProperty("2K3.THUMBS.NEW.DOWNLOAD.LIMIT", 10);
 		this.ini_file = folders.settings + "thumbs.ini";
 		this.exts = "jpg|jpeg|png|gif";
 		this.folder = "";
