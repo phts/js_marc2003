@@ -693,7 +693,7 @@ _.mixin({
 						this.success(f);
 					} else {
 						if (this.mode == "musicbrainz" && this.attempt < 5) {
-							window.SetTimeout(this.mb_retry, 1000);
+							window.SetTimeout(this.mb_retry, 1500);
 						} else {
 							panel.console("HTTP error: " + this.xmlhttp.status);
 							this.xmlhttp.responsetext && fb.trace(this.xmlhttp.responsetext);
