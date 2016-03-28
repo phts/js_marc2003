@@ -153,7 +153,7 @@ _.mixin({
 						var a =  _.q(_.fbSanitise(this.artist));
 						var n = _.round(_.now() / 1000);
 						var t = utils.ReadINI(this.ini_file, "Timestamps", a, 0);
-						if (n - t > 3600) {
+						if (n - t > ONE_DAY) {
 							utils.WriteINI(this.ini_file, "Timestamps", a, n);
 							this.download();
 						}
