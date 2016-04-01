@@ -149,7 +149,8 @@ _.mixin({
 						return;
 					this.artist = temp_artist;
 					this.folder = panel.new_artist_folder(this.artist);
-					if (this.auto_download && _.tagged(this.artist) && _.getFiles(this.folder, this.exts).length == 0) {
+					var np = fb.GetNowPlaying();
+					if (np && this.auto_download && np.Compare(panel.metadb) && _.tagged(this.artist) && _.getFiles(this.folder, this.exts).length == 0) {
 						var a =  _.q(_.fbSanitise(this.artist));
 						var n = _.round(_.now() / 1000);
 						var t = utils.ReadINI(this.ini_file, "Timestamps", a, 0);
