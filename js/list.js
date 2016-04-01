@@ -23,17 +23,6 @@ _.mixin({
 						gr.DrawString(guifx.drop, this.guifx_font, panel.colours.highlight, this.x + this.w - 20, this.y + 18 + (i * panel.row_height), panel.row_height, panel.row_height, SF_CENTRE);
 				}
 				break;
-			case "echonest":
-				this.text_width = this.w - 110;
-				for (var i = 0; i < Math.min(this.items, this.rows); i++) {
-					if (this.data[i + this.offset].width > 0) {
-						gr.GdiDrawText(this.data[i + this.offset].name, panel.fonts.title, panel.colours.highlight, this.x, this.y + 16 + (i * panel.row_height), this.text_width, panel.row_height, LEFT);
-						gr.GdiDrawText(this.data[i + this.offset].date, panel.fonts.title, panel.colours.highlight, this.x, this.y + 16 + (i * panel.row_height), this.w, panel.row_height, RIGHT);
-					} else {
-						gr.GdiDrawText(this.data[i + this.offset].name, panel.fonts.normal, panel.colours.text, this.x, this.y + 16 + (i * panel.row_height), this.w, panel.row_height, LEFT);
-					}
-				}
-				break;
 			case "lastfm_info":
 				if (this.lastfm_mode == 1) {
 					this.text_x = this.spacer_w + 5;
@@ -309,13 +298,6 @@ _.mixin({
 					panel.m.AppendMenuSeparator();
 				}
 				break;
-			case "echonest":
-				_.forEach(this.echonest_modes, function (item, i) {
-					panel.m.AppendMenuItem(MF_STRING, i + 3050, _.capitalize(item));
-				});
-				panel.m.CheckMenuRadioItem(3050, 3052, this.echonest_mode + 3050);
-				panel.m.AppendMenuSeparator();
-				break;
 			case "lastfm_info":
 				panel.m.AppendMenuItem(MF_STRING, 3100, "Artist Info");
 				panel.m.AppendMenuItem(MF_STRING, 3101, "User Charts");
@@ -384,13 +366,6 @@ _.mixin({
 				this.data.push(this.deleted_items[idx - 3010]);
 				this.deleted_items.splice(idx - 3010, 1);
 				this.save();
-				break;
-			case 3050:
-			case 3051:
-			case 3052:
-				this.echonest_mode = idx - 3050;
-				window.SetProperty("2K3.LIST.ECHONEST.MODE", this.echonest_mode);
-				this.reset();
 				break;
 			case 3100:
 			case 3101:
@@ -485,23 +460,6 @@ _.mixin({
 					item.width = _.textWidth(item.name, panel.fonts.normal);
 				});
 				this.items = this.data.length;
-				break;
-			case "echonest":
-				this.filename = panel.new_artist_folder(this.artist) + "echonest.json";
-				if (_.isFile(this.filename)) {
-					var data = _.jsonParse(_.open(this.filename), "response.artist." + this.echonest_modes[this.echonest_mode]);
-					_.forEach(data, function (item) {
-						var name = _.stripTags(item.name).replace(/\s{2,}/g, " ");
-						this.data.push({name : name, date : (item.date_posted || item.date_reviewed || item.date_found || "").substring(0, 10), url : (item.url || "").replace(/\\/g, ""), width : _.textWidth(name, panel.fonts.title)});
-						this.data.push({name : _.stripTags(item.summary).replace(/\s{2,}/g, " "), date : "", url : "", width : 0});
-						this.data.push({name : "", date : "", url : "", width : 0});
-					}, this);
-					this.items = this.data.length;
-					if (_.fileExpired(this.filename, ONE_DAY))
-						this.get();
-				} else {
-					this.get();
-				}
 				break;
 			case "lastfm_info":
 				this.filename = "";
@@ -652,11 +610,6 @@ _.mixin({
 		this.get = function () {
 			var f = this.filename;
 			switch (this.mode) {
-			case "echonest":
-				if (!_.tagged(this.artist))
-					return;
-				var url = "http://developer.echonest.com/api/v4/artist/profile/?api_key=EKWS4ESQLKN3G2ZWV&bucket=blogs&bucket=news&bucket=reviews&name=" + encodeURIComponent(this.artist);
-				break;
 			case "lastfm_info":
 				switch (this.lastfm_mode) {
 				case 0:
@@ -720,7 +673,6 @@ _.mixin({
 				}
 				break;
 			case this.mode == "musicbrainz": // links
-			case this.mode == "echonest":
 				_.save(JSON.stringify(data), f);
 				this.reset();
 				break;
@@ -745,8 +697,6 @@ _.mixin({
 			switch (this.mode) {
 			case "autoplaylists":
 				return "Autoplaylists";
-			case "echonest":
-				return this.artist + ": " + this.echonest_modes[this.echonest_mode];
 			case "lastfm_info":
 				switch (this.lastfm_mode) {
 				case 0:
@@ -884,14 +834,6 @@ _.mixin({
 				this.guifx_font = _.gdiFont(guifx.font, 12, 0);
 				this.filename = folders.settings + "autoplaylists.json";
 				this.update();
-				break;
-			case "echonest":
-				_.createFolder(folders.data);
-				_.createFolder(folders.artists);
-				this.ua = "";
-				this.echonest_modes = ["news", "reviews", "blogs"];
-				this.echonest_mode = window.GetProperty("2K3.LIST.ECHONEST.MODE", 0);
-				this.font = _.gdiFont(panel.fonts.name, 12);
 				break;
 			case "lastfm_info":
 				_.createFolder(folders.data);
