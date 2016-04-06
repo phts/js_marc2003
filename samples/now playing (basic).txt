@@ -88,6 +88,8 @@ function on_mouse_lbtn_up(x, y) {
 }
 
 function on_mouse_lbtn_dblclk(x, y) {
+	if (text.move(x, y))
+		return;
 	thumbs.lbtn_dblclk(x, y);
 }
 
