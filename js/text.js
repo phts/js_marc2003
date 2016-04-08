@@ -86,7 +86,7 @@ _.mixin({
 		this.wheel = function (s) {
 			if (this.trace(this.mx, this.my)) {
 				if (this.lines.length > this.rows) {
-					var offset = this.offset - (s * 5);
+					var offset = this.offset - (s * 3);
 					if (offset < 0)
 						offset = 0;
 					if (offset + this.rows > this.lines.length)

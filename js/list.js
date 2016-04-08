@@ -131,7 +131,7 @@ _.mixin({
 		this.wheel = function (s) {
 			if (this.trace(this.mx, this.my)) {
 				if (this.items > this.rows) {
-					var offset = this.offset - (s * 6);
+					var offset = this.offset - (s * 3);
 					if (offset < 0)
 						offset = 0;
 					if (offset + this.rows > this.items)
