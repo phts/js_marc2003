@@ -140,7 +140,7 @@ _.mixin({
 			var idx = m.TrackPopupMenu(this.x, this.y + this.size);
 			switch (idx) {
 			case 1:
-				var token = _.input("Enter your token\n\nhttp://listenbrainz.org/user/import", panel.name, this.token);
+				var token = _.input("Enter your token\n\nhttps://listenbrainz.org/user/import", panel.name, this.token);
 				if (token != this.token) {
 					this.token = token;
 					utils.WriteINI(this.ini_file, "Listenbrainz", "token", this.token);
@@ -155,7 +155,7 @@ _.mixin({
 				}
 				break;
 			case 3:
-				_.browser("http://listenbrainz.org/user/" + this.username);
+				_.browser("https://listenbrainz.org/user/" + this.username);
 				break;
 			case 4:
 				this.show_data = !this.show_data;

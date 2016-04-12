@@ -546,7 +546,7 @@ _.mixin({
 								return {
 									name : item.title,
 									width : _.textWidth(item.title, panel.fonts.normal),
-									url : "http://musicbrainz.org/release-group/" + item.id,
+									url : "https://musicbrainz.org/release-group/" + item.id,
 									date : item["first-release-date"].substring(0, 4),
 									primary : item["primary-type"],
 									secondary : item["secondary-types"].sort()[0] || null
