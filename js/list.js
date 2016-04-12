@@ -669,7 +669,7 @@ _.mixin({
 					this.get();
 				} else {
 					_.save(JSON.stringify(this.mb_data), f);
-					this.reset()
+					this.reset();
 				}
 				break;
 			case this.mode == "musicbrainz": // links

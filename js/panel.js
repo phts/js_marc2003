@@ -40,7 +40,7 @@ _.mixin({
 			if (this.metadb_func) {
 				switch (this.selection) {
 				case 0:
-					this.metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem()
+					this.metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
 					break;
 				case 1:
 					this.metadb = fb.GetFocusItem();

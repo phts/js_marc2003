@@ -200,7 +200,7 @@ _.mixin({
 		}
 	},
 	browser : function (url) {
-		_.run(url)
+		_.run(url);
 	},
 	explorer : function (file) {
 		if (_.isFile(file))

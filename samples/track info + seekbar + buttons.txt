@@ -45,7 +45,7 @@ function on_size() {
 function on_paint(gr) {
 	gr.FillSolidRect(0, 0, panel.w, panel.h, colours.background);
 	buttons.paint(gr);
-	gr.FillSolidRect(seekbar.x, seekbar.y + 7, seekbar.w + 16, 6, colours.seekbar_background)
+	gr.FillSolidRect(seekbar.x, seekbar.y + 7, seekbar.w + 16, 6, colours.seekbar_background);
 	if (fb.IsPlaying) {
 		img && _.drawImage(gr, img, 0, 0, panel.h, panel.h, image.centre);
 		gr.GdiDrawText(_.tfe("%title%"), panel.fonts.title, colours.title, panel.h + 10, 0, 270, panel.h * 0.6, LEFT);
