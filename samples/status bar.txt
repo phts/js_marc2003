@@ -13,7 +13,7 @@ var text_colour = _.RGB(0, 0, 0);
 
 var show_name = window.GetProperty("2K3.STATUS.SHOW.NAME", true);
 var show_count = window.GetProperty("2K3.STATUS.SHOW.COUNT", true);
-var show_length = window.GetProperty("2K3.STATUS.SHOW.LENGTH", true);
+var show_duration = window.GetProperty("2K3.STATUS.SHOW.DURATION", true);
 var show_size = window.GetProperty("2K3.STATUS.SHOW.SIZE", true);
 var show_volume = window.GetProperty("2K3.STATUS.SHOW.VOLUME", true);
 var font = _.gdiFont("Segoe UI", 11);
@@ -76,8 +76,8 @@ function on_mouse_rbtn_up(x, y) {
 	m.CheckMenuItem(10000, show_name);
 	m.AppendMenuItem(MF_STRING, 10001, "Show playlist item count");
 	m.CheckMenuItem(10001, show_count);
-	m.AppendMenuItem(MF_STRING, 10002, "Show playlist length");
-	m.CheckMenuItem(10002, show_length);
+	m.AppendMenuItem(MF_STRING, 10002, "Show playlist duration");
+	m.CheckMenuItem(10002, show_duration);
 	m.AppendMenuItem(MF_STRING, 10003, "Show playlist size");
 	m.CheckMenuItem(10003, show_size);
 	m.AppendMenuSeparator();
@@ -100,8 +100,8 @@ function on_mouse_rbtn_up(x, y) {
 		refresh();
 		break;
 	case 10002:
-		show_length = !show_length;
-		window.SetProperty("2K3.STATUS.SHOW.LENGTH", show_length);
+		show_duration = !show_duration;
+		window.SetProperty("2K3.STATUS.SHOW.DURATION", show_duration);
 		refresh();
 		break;
 	case 10003:
@@ -136,6 +136,11 @@ function on_playlist_items_removed(p) {
 		refresh();
 }
 
+function on_playlists_changed() {
+	if (show_name)
+		refresh();
+}
+
 function on_playlist_switch() {
 	refresh();
 }
@@ -148,7 +153,7 @@ function refresh() {
 		tmp.push(plman.GetPlaylistName(plman.ActivePlaylist));
 	if (show_count)
 		tmp.push(count + (count == 1 ? " track" : " tracks"));
-	if (show_length)
+	if (show_duration)
 		tmp.push(utils.FormatDuration(items.CalcTotalDuration()));
 	if (show_size)
 		tmp.push(utils.FormatFileSize(items.CalcTotalSize()));
