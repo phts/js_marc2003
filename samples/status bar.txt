@@ -11,6 +11,10 @@ var text_colour = _.RGB(0, 0, 0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+var show_name = window.GetProperty("2K3.STATUS.SHOW.NAME", true);
+var show_count = window.GetProperty("2K3.STATUS.SHOW.COUNT", true);
+var show_length = window.GetProperty("2K3.STATUS.SHOW.LENGTH", true);
+var show_size = window.GetProperty("2K3.STATUS.SHOW.SIZE", true);
 var show_volume = window.GetProperty("2K3.STATUS.SHOW.VOLUME", true);
 var font = _.gdiFont("Segoe UI", 11);
 var ww = 0;
@@ -29,7 +33,7 @@ function on_paint(gr) {
 	gr.FillSolidRect(0, 0, ww, wh, bg);
 	if (fb.IsPlaying)
 		gr.GdiDrawText(_.tfe(left_text_tf), font, text_colour, 5, -1, ww - right_text_width - (show_volume ? 180: 50), font.Height, LEFT);
-	if (count > 0)
+	if (plman.ActivePlaylist < plman.PlaylistCount)
 		gr.GdiDrawText(right_text, font, text_colour, 0, -1, ww - (show_volume ? 130 : 5), font.Height, RIGHT);
 	if (show_volume)
 		gr.GdiDrawText(fb.Volume.toFixed(2) + " dB", font, text_colour, 0, -1, ww - 5, font.Height, RIGHT);
@@ -68,20 +72,49 @@ function on_mouse_rbtn_up(x, y) {
 		c.BuildMenu(m, 1, -1);
 		m.AppendMenuSeparator();
 	}
-	m.AppendMenuItem(MF_STRING, 10000, "Show volume");
-	m.CheckMenuItem(10000, show_volume);
+	m.AppendMenuItem(MF_STRING, 10000, "Show playlist name");
+	m.CheckMenuItem(10000, show_name);
+	m.AppendMenuItem(MF_STRING, 10001, "Show playlist item count");
+	m.CheckMenuItem(10001, show_count);
+	m.AppendMenuItem(MF_STRING, 10002, "Show playlist length");
+	m.CheckMenuItem(10002, show_length);
+	m.AppendMenuItem(MF_STRING, 10003, "Show playlist size");
+	m.CheckMenuItem(10003, show_size);
 	m.AppendMenuSeparator();
-	m.AppendMenuItem(MF_STRING, 10001, "Configure...");
+	m.AppendMenuItem(MF_STRING, 10004, "Show volume");
+	m.CheckMenuItem(10004, show_volume);
+	m.AppendMenuSeparator();
+	m.AppendMenuItem(MF_STRING, 10010, "Configure...");
 	var idx = m.TrackPopupMenu(x, y);
 	switch (idx) {
 	case 0:
 		break;
 	case 10000:
+		show_name = !show_name;
+		window.SetProperty("2K3.STATUS.SHOW.NAME", show_name);
+		refresh();
+		break;
+	case 10001:
+		show_count = !show_count;
+		window.SetProperty("2K3.STATUS.SHOW.COUNT", show_count);
+		refresh();
+		break;
+	case 10002:
+		show_length = !show_length;
+		window.SetProperty("2K3.STATUS.SHOW.LENGTH", show_length);
+		refresh();
+		break;
+	case 10003:
+		show_size = !show_size;
+		window.SetProperty("2K3.STATUS.SHOW.SIZE", show_size);
+		refresh();
+		break;
+	case 10004:
 		show_volume = !show_volume;
 		window.SetProperty("2K3.STATUS.SHOW.VOLUME", show_volume);
 		window.Repaint();
 		break;
-	case 10001:
+	case 10010:
 		window.ShowConfigure();
 		break;
 	default:
@@ -110,7 +143,16 @@ function on_playlist_switch() {
 function refresh() {
 	var items = plman.GetPlaylistItems(plman.ActivePlaylist);
 	count = items.Count;
-	right_text = count + (count == 1 ? " track :: " : " tracks :: ") + utils.FormatDuration(items.CalcTotalDuration()) + " :: " + utils.FormatFileSize(items.CalcTotalSize());
+	var tmp = [];
+	if (show_name)
+		tmp.push(plman.GetPlaylistName(plman.ActivePlaylist));
+	if (show_count)
+		tmp.push(count + (count == 1 ? " track" : " tracks"));
+	if (show_length)
+		tmp.push(utils.FormatDuration(items.CalcTotalDuration()));
+	if (show_size)
+		tmp.push(utils.FormatFileSize(items.CalcTotalSize()));
+	right_text = tmp.join(" :: ");
 	right_text_width = _.textWidth(right_text, font);
 	window.Repaint();
 	items.Dispose();
