@@ -475,8 +475,9 @@ _.mixin({
 			this.files = _.getFiles(this.folder, this.exts, this.sort == 0);
 			if (this.source == 0 && this.files.length > 1) {
 				this.default_file = this.folder + utils.ReadINI(this.ini_file, "Defaults", _.q(_.fbSanitise(this.artist)));
-				if (_.includes(this.files, this.default_file)) {
-					this.files.splice(_.indexOf(this.files, this.default_file), 1);
+				var tmp = _.indexOf(this.files, this.default_file)
+				if (tmp > -1) {
+					this.files.splice(tmp, 1);
 					this.files.unshift(this.default_file);
 				}
 			}
