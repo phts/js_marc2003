@@ -630,15 +630,20 @@ _.mixin({
 			this.xmlhttp.send();
 			this.xmlhttp.onreadystatechange = _.bind(function () {
 				if (this.xmlhttp.readyState == 4) {
-					if (this.xmlhttp.status == 200) {
+					switch (true) {
+					case this.xmlhttp.status == 200:
 						this.success(f);
-					} else {
-						if (this.mode == "musicbrainz" && this.attempt < 5) {
-							window.SetTimeout(this.mb_retry, 1500);
-						} else {
-							panel.console("HTTP error: " + this.xmlhttp.status);
-							this.xmlhttp.responsetext && fb.trace(this.xmlhttp.responsetext);
-						}
+						break;
+					case this.xmlhttp.status == 404 && this.mode == "lastfm_info" && this.lastfm_mode == 1:
+						panel.console("Username not found.");
+						break;
+					case this.xmlhttp.status == 503 && this.mode == "musicbrainz" && this.attempt < 5:
+						window.SetTimeout(this.mb_retry, 1500);
+						break;
+					default:
+						panel.console("HTTP error: " + this.xmlhttp.status);
+						this.xmlhttp.responsetext && fb.trace(this.xmlhttp.responsetext);
+						break;
 					}
 				}
 			}, this);
