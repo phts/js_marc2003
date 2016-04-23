@@ -28,14 +28,14 @@ _.mixin({
 					this.text_x = this.spacer_w + 5;
 					this.text_width = _.round(this.w / 2) + 30;
 					var lastfm_charts_bar_x = this.x + this.text_x + this.text_width + 10;
-					var unit_width = (this.w - lastfm_charts_bar_x - 40) / this.max_playcount;
+					var unit_width = (this.w - lastfm_charts_bar_x - 40) / this.data[0].scrobbles;
 					var bar_colour = _.splitRGB(this.lastfm_charts_colour);
 					for (var i = 0; i < Math.min(this.items, this.rows); i++) {
-						var bar_width = _.ceil(unit_width * this.data[i + this.offset].playcount);
+						var bar_width = _.ceil(unit_width * this.data[i + this.offset].scrobbles);
 						gr.GdiDrawText(this.data[i + this.offset].rank + ".", panel.fonts.normal, panel.colours.highlight, this.x, this.y + 16 + (i * panel.row_height), this.text_x - 5, panel.row_height, RIGHT);
 						gr.GdiDrawText(this.data[i + this.offset].name, panel.fonts.normal, panel.colours.text, this.x + this.text_x, this.y + 16 + (i * panel.row_height), this.text_width, panel.row_height, LEFT);
 						gr.FillSolidRect(lastfm_charts_bar_x, this.y + 18 + (i * panel.row_height), bar_width, panel.row_height - 3, bar_colour);
-						gr.GdiDrawText(_.formatNumber(this.data[i + this.offset].playcount, ","), panel.fonts.normal, panel.colours.text, lastfm_charts_bar_x + bar_width + 5, this.y + 16 + (i * panel.row_height), 60, panel.row_height, LEFT);
+						gr.GdiDrawText(_.formatNumber(this.data[i + this.offset].scrobbles, ","), panel.fonts.normal, panel.colours.text, lastfm_charts_bar_x + bar_width + 5, this.y + 16 + (i * panel.row_height), 60, panel.row_height, LEFT);
 					}
 					break;
 				} else {
@@ -314,7 +314,7 @@ _.mixin({
 					break;
 				case 1:
 					_.forEach(this.lastfm_charts_methods, function (item, i) {
-						panel.m.AppendMenuItem(MF_STRING, i + 3120, _.capitalize(item.display));
+						panel.m.AppendMenuItem(MF_STRING, i + 3120, _.capitalize(item));
 					});
 					panel.m.CheckMenuRadioItem(3120, 3122, this.lastfm_charts_method + 3120);
 					panel.m.AppendMenuSeparator();
@@ -467,6 +467,10 @@ _.mixin({
 					panel.console("Last.fm API KEY not set.");
 					break;
 				}
+				if (this.lastfm_mode > 0 && lastfm.username.length == 0) {
+					panel.console("Last.fm Username not set.");
+					break;
+				}
 				switch (this.lastfm_mode) {
 				case 0:
 					this.filename = panel.new_artist_folder(this.artist) + "lastfm." + this.lastfm_artist_methods[this.lastfm_artist_method].method + ".json";
@@ -487,24 +491,12 @@ _.mixin({
 					}
 					break;
 				case 1:
-					if (lastfm.username.length == 0) {
-						panel.console("Last.fm Username not set.");
-						break;
-					}
-					this.filename = folders.lastfm + lastfm.username + "." + this.lastfm_charts_methods[this.lastfm_charts_method].method + "." + this.lastfm_charts_periods[this.lastfm_charts_period].period + ".json";
+					this.filename = folders.lastfm + lastfm.username + "." + this.lastfm_charts_methods[this.lastfm_charts_method] + "." + this.lastfm_charts_periods[this.lastfm_charts_period].period + ".json";
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename), this.lastfm_charts_methods[this.lastfm_charts_method].json);
-						for (var i = 0; i < data.length; i++) {
-							var name = this.lastfm_charts_method == 0 ? data[i].name : data[i].artist.name + " - " + data[i].name;
-							this.data[i] = {
-								name : name,
-								width : _.textWidth(name, panel.fonts.normal),
-								url : data[i].url,
-								playcount : data[i].playcount,
-								rank : i > 0 && data[i].playcount == data[i - 1].playcount ? this.data[i - 1].rank : i + 1
-							};
-						}
-						this.max_playcount = _.max(_.map(this.data, "playcount"));
+						this.data = _.jsonParse(_.open(this.filename));
+						_.forEach(this.data, function (item) {
+							item.width = _.textWidth(item.name, panel.fonts.normal);
+						});
 						this.items = this.data.length;
 						if (_.fileExpired(this.filename, ONE_DAY))
 							this.get();
@@ -513,10 +505,6 @@ _.mixin({
 					}
 					break;
 				case 2:
-					if (lastfm.username.length == 0) {
-						panel.console("Last.fm Username not set.");
-						break;
-					}
 					this.filename = folders.lastfm + lastfm.username + ".user.getRecentTracks.json";
 					if (_.isFile(this.filename)) {
 						var data = _.jsonParse(_.open(this.filename), "recenttracks.track");
@@ -618,7 +606,7 @@ _.mixin({
 					var url = lastfm.get_base_url() + "&limit=100&method=" + this.lastfm_artist_methods[this.lastfm_artist_method].method + "&artist=" + encodeURIComponent(this.artist);
 					break;
 				case 1:
-					var url = lastfm.get_base_url() + "&limit=100&method=" + this.lastfm_charts_methods[this.lastfm_charts_method].method + "&period=" + this.lastfm_charts_periods[this.lastfm_charts_period].period + "&user=" + lastfm.username;
+					var url = "http://www.last.fm/user/" + lastfm.username + "/library/" + this.lastfm_charts_methods[this.lastfm_charts_method] + "s?date_preset=" + this.lastfm_charts_periods[this.lastfm_charts_period].period;
 					break;
 				case 2:
 					var url = lastfm.get_base_url() + "&method=user.getRecentTracks&username=" + lastfm.username + "&s=" + _.now();
@@ -657,9 +645,9 @@ _.mixin({
 		}
 		
 		this.success = function (f) {
-			var data = _.jsonParse(this.xmlhttp.responsetext);
 			switch (true) {
 			case this.mode == "musicbrainz" && this.mb_mode == 0: // releases
+				var data = _.jsonParse(this.xmlhttp.responsetext);
 				var max_offset = Math.min(500, data["release-group-count"] || 0) - 100;
 				var rg = data["release-groups"] || [];
 				if (rg.length > 0)
@@ -673,21 +661,70 @@ _.mixin({
 				}
 				break;
 			case this.mode == "musicbrainz": // links
+				var data = _.jsonParse(this.xmlhttp.responsetext);
 				_.save(JSON.stringify(data), f);
 				this.reset();
 				break;
 			case this.mode == "lastfm_info":
-				if (data.error)
-					return panel.console(data.message);
-				if (this.lastfm_mode == 0) {
+				switch (this.lastfm_mode) {
+				case 0: // artist info
+					var data = _.jsonParse(this.xmlhttp.responsetext);
+					if (data.error)
+						return panel.console(data.message);
 					var temp = _.get(data, this.lastfm_artist_methods[this.lastfm_artist_method].json, []);
 					if (temp.length == 0)
 						return;
 					_.save(JSON.stringify(data), f, -1);
 					this.reset();
-				} else {
+					break;
+				case 1: // user charts
+					var tbody = _.getElementsByTagName(this.xmlhttp.responsetext, "tbody")[0];
+					if (tbody) {
+						var tr = tbody.getElementsByTagName("tr");
+						switch (this.lastfm_charts_method) {
+						case 0:
+							var tmp = _.map(tr, function (item) {
+								var td = item.getElementsByTagName("td");
+								var a = item.getElementsByTagName("a");
+								var name = a[0].innerText;
+								return {
+									rank : td[0].innerText,
+									name : name,
+									url : "http://www.last.fm/music/" + name,
+									scrobbles : a[2].innerText.split(" ")[0]
+								};
+							});
+							break;
+						case 1:
+						case 2:
+							var tmp = _.map(tr, function (item) {
+								var td = item.getElementsByTagName("td");
+								var a = item.getElementsByTagName("a");
+								var b = a.length == 4 ? 0 : 1
+								var artist = a[b].innerText;
+								var title = a[b + 1].innerText
+								return {
+									rank : td[0].innerText,
+									name : artist + " - " + title,
+									url : "http://www.last.fm/music/" + artist + (this.lastfm_charts_method == 1 ? "/" : "/_/") + title,
+									scrobbles : a[b + 3].innerText.split(" ")[0]
+								};
+							}, this);
+							break;
+						}
+					} else {
+						var tmp = [];
+					}
+					_.save(JSON.stringify(tmp), f, -1);
+					this.update();
+					break;
+				case 2: // recent tracks
+					var data = _.jsonParse(this.xmlhttp.responsetext);
+					if (data.error)
+						return panel.console(data.message);
 					_.save(JSON.stringify(data), f, -1);
 					this.update();
+					break;
 				}
 				break;
 			}
@@ -702,7 +739,7 @@ _.mixin({
 				case 0:
 					return this.artist + ": " + this.lastfm_artist_methods[this.lastfm_artist_method].display;
 				case 1:
-					return lastfm.username + ": " + this.lastfm_charts_periods[this.lastfm_charts_period].display + " " + this.lastfm_charts_methods[this.lastfm_charts_method].display + " charts";
+					return lastfm.username + ": " + this.lastfm_charts_periods[this.lastfm_charts_period].display + " " + this.lastfm_charts_methods[this.lastfm_charts_method] + " charts";
 				case 2:
 					return lastfm.username + ": recent tracks";
 				}
@@ -841,7 +878,7 @@ _.mixin({
 				_.createFolder(folders.artists);
 				_.createFolder(folders.settings);
 				this.ua = lastfm.ua;
-				this.lastfm_mode = window.GetProperty("2K3.LIST.LASTFM.MODE", 0); // 0 artist 1 charts 2 recommendations 3 recent tracks
+				this.lastfm_mode = window.GetProperty("2K3.LIST.LASTFM.MODE", 0); // 0 artist 1 charts 2 recent tracks
 				this.lastfm_artist_methods = [{
 						method : "artist.getSimilar",
 						json : "similarartists.artist",
@@ -861,38 +898,25 @@ _.mixin({
 					}
 				];
 				this.lastfm_artist_method = window.GetProperty("2K3.LIST.LASTFM.ARTIST.METHOD", 0);
-				this.lastfm_charts_methods = [{
-						method : "user.getTopArtists",
-						json : "topartists.artist",
-						display : "artist"
-					}, {
-						method : "user.getTopAlbums",
-						json : "topalbums.album",
-						display : "album"
-					}, {
-						method : "user.getTopTracks",
-						json : "toptracks.track",
-						display : "track"
-					}
-				];
+				this.lastfm_charts_methods = ["artist", "album", "track"];
 				this.lastfm_charts_method = window.GetProperty("2K3.LIST.LASTFM.CHARTS.METHOD", 0);
 				this.lastfm_charts_periods = [{
-						period : "overall",
+						period : "ALL",
 						display : "overall"
 					}, {
-						period : "7day",
+						period : "LAST_7_DAYS",
 						display : "last 7 days"
 					}, {
-						period : "1month",
+						period : "LAST_30_DAYS",
 						display : "1 month"
 					}, {
-						period : "3month",
+						period : "LAST_90_DAYS",
 						display : "3 month"
 					}, {
-						period : "6month",
+						period : "LAST_180_DAYS",
 						display : "6 month"
 					}, {
-						period : "12month",
+						period : "LAST_365_DAYS",
 						display : "12 month"
 					}
 				];
