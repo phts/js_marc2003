@@ -702,19 +702,20 @@ _.mixin({
 							break;
 						case 1:
 						case 2:
+							var sep = this.lastfm_charts_method == 1 ? "/" : "/_/";
 							var tmp = _.map(tr, function (item) {
 								var td = item.getElementsByTagName("td");
 								var a = item.getElementsByTagName("a");
-								var b = a.length == 4 ? 0 : 1
+								var b = Math.abs(4 - a.length);
 								var artist = a[b].innerText;
-								var title = a[b + 1].innerText
+								var title = a[b + 1].innerText;
 								return {
 									rank : td[0].innerText,
 									name : artist + " - " + title,
-									url : "http://www.last.fm/music/" + artist + (this.lastfm_charts_method == 1 ? "/" : "/_/") + title,
+									url : "http://www.last.fm/music/" + artist + sep + title,
 									scrobbles : a[b + 3].innerText.split(" ")[0]
 								};
-							}, this);
+							});
 							break;
 						}
 					} else {
