@@ -13,7 +13,7 @@ _.mixin({
 		this.playback_time = function () {
 			this.time_elapsed++;
 			switch (true) {
-			case !this.enabled:
+			case !this.enabled || this.loved_working || this.playcount_working:
 				return;
 			case this.time_elapsed == 2 && fb.IsMetadbInMediaLibrary(fb.GetNowPlaying()):
 				this.post("track.updateNowPlaying", fb.GetNowPlaying());
@@ -153,15 +153,16 @@ _.mixin({
 				if (data.error) {
 					panel.console(data.message);
 				} else {
-					data = _.get(data, 'scrobbles["@attr"]');
-					if (data.accepted == 1) {
-						panel.console("Track scrobbled successfully.");
-						if (!this.loved_working && !this.playcount_working) {
-							panel.console("Now fetching updated playcount...");
-							this.get("track.getInfo", metadb);
-						}
-					} else if (data.ignored == 1) {
+					data = _.get(data, 'scrobbles["@attr"]', []);
+					if (data.ignored == 1)
 						panel.console("Track not scrobbled. The submission server refused it possibly because of incomplete tags or incorrect system time.");
+					else if (data.accepted == 1)
+						panel.console("Track scrobbled successfully.");
+					else
+						panel.console("Unexpected submission server response.");
+					if (!this.loved_working && !this.playcount_working) {
+						panel.console("Now fetching playcount...");
+						this.get("track.getInfo", metadb);
 					}
 				}
 				break;
