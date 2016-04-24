@@ -67,25 +67,6 @@ _.mixin({
 			utils.WriteINI(this.ini_file, "Last.fm", k, v);
 		}
 		
-		this.ok = function () {
-			switch (true) {
-			case this.api_key.length != 32:
-				panel.console("Last.fm API KEY not set.");
-				return false;
-			case this.secret.length != 32:
-				panel.console("Last.fm SECRET not set.");
-				return false;
-			case this.username.length == 0:
-				panel.console("Last.fm Username not set.");
-				return false;
-			case this.sk.length != 32:
-				panel.console("Last.fm Password not set.");
-				return false;
-			default:
-				return true;
-			}
-		}
-		
 		this.scrobbler = null;
 		this.ini_file = folders.settings + "lastfm.ini";
 		this.api_key = this.read_ini("api_key");

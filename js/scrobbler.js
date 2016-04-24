@@ -13,7 +13,7 @@ _.mixin({
 		this.playback_time = function () {
 			this.time_elapsed++;
 			switch (true) {
-			case !this.enabled || this.loved_working || this.playcount_working:
+			case !this.enabled:
 				return;
 			case this.time_elapsed == 2 && fb.IsMetadbInMediaLibrary(fb.GetNowPlaying()):
 				this.post("track.updateNowPlaying", fb.GetNowPlaying());
@@ -33,8 +33,19 @@ _.mixin({
 		}
 		
 		this.post = function (method, metadb) {
-			if (!lastfm.ok())
+			switch (true) {
+			case this.loved_working:
+			case this.playcount_working:
 				return;
+			case lastfm.api_key.length != 32:
+				return panel.console("Last.fm API KEY not set.");
+			case lastfm.secret.length != 32:
+				return panel.console("Last.fm SECRET not set.");
+			case lastfm.username.length == 0:
+				return panel.console("Last.fm Username not set.");
+			case lastfm.sk.length != 32:
+				return panel.console("Last.fm Password not set.");
+			}
 			var timestamp = _.floor(_.now() / 1000);
 			var artist = _.tf("%artist%", metadb);
 			var track = _.tf("%title%", metadb);
