@@ -241,22 +241,10 @@ _.mixin({
 					this.get("user.getLovedTracks", null, this.page);
 				} else {
 					this.loved_working = false;
-					switch (true) {
-					case this.full_import:
-						this.playcount_working = true;
-						this.pages = 0;
-						this.r = 1;
-						this.get("user.getTopTracks", null, 1);
-						break;
-					case this.sql == "BEGIN TRANSACTION;\r\n":
-						panel.console("Nothing found to import.");
-						break;
-					default:
-						this.sql += "COMMIT;";
-						_.save(this.sql, this.sql_file);
-						this.finish_import();
-						break;
-					}
+					this.playcount_working = true;
+					this.pages = 0;
+					this.r = 1;
+					this.get("user.getTopTracks", null, 1);
 				}
 				break;
 			case "user.getTopTracks":
@@ -338,17 +326,11 @@ _.mixin({
 		}
 		
 		this.finish_import = function () {
-			switch (true) {
-			case !this.full_import && this.loved_page_errors > 0:
-				panel.console("Loved track page errors: " + this.loved_page_errors + " (200 records are lost for every page that fails.)");
-				break;
-			case this.full_import && this.loved_page_errors + this.playcount_page_errors > 0:
+			if (this.loved_page_errors + this.playcount_page_errors > 0) {
 				panel.console("Loved track page errors: " + this.loved_page_errors + " (200 records are lost for every page that fails.)");
 				panel.console("Playcount page errors: " + this.playcount_page_errors + " (100 records are lost for every page that fails.)");
-				break;
-			default:
+			} else {
 				panel.console("There were no errors reported.");
-				break;
 			}
 			_.run(_.shortPath(this.cmd_file), _.shortPath(this.sqlite3_file), _.shortPath(this.db_file), _.shortPath(this.sql_file));
 		}
@@ -385,13 +367,11 @@ _.mixin({
 			m.AppendMenuItem(flag, 3, "Enabled");
 			m.CheckMenuItem(3, this.enabled);
 			m.AppendMenuSeparator();
-			s.AppendMenuItem(flag, 4, "loved tracks and playcount");
-			s.AppendMenuItem(flag, 5, "loved tracks only");
-			s.AppendTo(m, MF_STRING, "Library import");
+			m.AppendMenuItem(MF_STRING, 4, "Library import");
 			m.AppendMenuSeparator();
-			m.AppendMenuItem(MF_STRING, 6, "Show loved tracks");
+			m.AppendMenuItem(MF_STRING, 5, "Show loved tracks");
 			m.AppendMenuSeparator();
-			m.AppendMenuItem(lastfm.username.length > 0 ? MF_STRING : MF_GRAYED, 7, "View profile");
+			m.AppendMenuItem(lastfm.username.length > 0 ? MF_STRING : MF_GRAYED, 6, "View profile");
 			var idx = m.TrackPopupMenu(this.x, this.y + this.size);
 			switch (idx) {
 			case 1:
@@ -406,14 +386,12 @@ _.mixin({
 				this.update_button();
 				break;
 			case 4:
-			case 5:
-				this.full_import = idx == 4;
 				this.start_import();
 				break;
-			case 6:
+			case 5:
 				fb.ShowLibrarySearchUI("%LASTFM_LOVED_DB% IS 1");
 				break;
-			case 7:
+			case 6:
 				_.browser("http://www.last.fm/user/" + lastfm.username);
 				break;
 			}
