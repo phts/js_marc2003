@@ -944,9 +944,9 @@ _.mixin({
 					if (item.type == "official homepage") {
 						image = "home";
 					} else {
-						_.forEach(this.mb_images_keys, function (item) {
-							if (url.indexOf(item) > -1) {
-								image = item;
+						_.forEach(this.mb_images, function (item, i) {
+							if (url.indexOf(i) > -1) {
+								image = i;
 								return false;
 							}
 						});
@@ -992,7 +992,6 @@ _.mixin({
 					"external" : _.img("mb\\external.png"),
 					"musicbrainz" : _.img("mb\\musicbrainz.png")
 				};
-				this.mb_images_keys = _.keys(this.mb_images);
 				break;
 			case "properties":
 				this.add_meta = function (f) {
