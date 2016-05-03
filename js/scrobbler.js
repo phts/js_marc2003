@@ -169,8 +169,10 @@ _.mixin({
 						panel.console("Track not scrobbled. The submission server refused it possibly because of incomplete tags or incorrect system time.");
 					else if (data.accepted == 1)
 						panel.console("Track scrobbled successfully.");
-					else
+					else {
 						panel.console("Unexpected submission server response.");
+						this.xmlhttp.responsetext && fb.trace(this.xmlhttp.responsetext);
+					}
 					if (!this.loved_working && !this.playcount_working) {
 						panel.console("Now fetching playcount...");
 						this.get("track.getInfo", metadb);
@@ -194,7 +196,7 @@ _.mixin({
 				if (fb.PlaybackLength < this.min_length)
 					return;
 				var old_playcount = _.parseInt(_.tf("$if2(%LASTFM_PLAYCOUNT_DB%,0)", metadb));
-				var new_playcount = data.track.userplaycount > 0 ? _.parseInt(data.track.userplaycount) : 1;
+				var new_playcount = data.track.userplaycount > 0 ? _.parseInt(data.track.userplaycount) : 0;
 				panel.console("Old value: " + old_playcount);
 				panel.console("New value: " + new_playcount);
 				switch (true) {
@@ -358,7 +360,6 @@ _.mixin({
 		
 		this.menu = function () {
 			var m = window.CreatePopupMenu();
-			var s = window.CreatePopupMenu();
 			var working = this.loved_working || this.playcount_working;
 			var flag = working || lastfm.username.length == 0 ? MF_GRAYED : MF_STRING;
 			m.AppendMenuItem(working ? MF_GRAYED : MF_STRING, 1, "Last.fm username...");
@@ -396,7 +397,6 @@ _.mixin({
 				break;
 			}
 			m.Dispose();
-			s.Dispose();
 		}
 		
 		this.interval_func = _.bind(function () {
