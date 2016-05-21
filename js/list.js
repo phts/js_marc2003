@@ -24,7 +24,16 @@ _.mixin({
 				}
 				break;
 			case "lastfm_info":
-				if (this.lastfm_mode == 1) {
+				switch (this.lastfm_mode) {
+				case 0:
+				case 2:
+					this.text_x = 0;
+					this.text_width = this.w;
+					for (var i = 0; i < Math.min(this.items, this.rows); i++) {
+						gr.GdiDrawText(this.data[i + this.offset].name, panel.fonts.normal, panel.colours.text, this.x, this.y + 16 + (i * panel.row_height), this.text_width, panel.row_height, LEFT);
+					}
+					break;
+				case 1:
 					this.text_x = this.spacer_w + 5;
 					this.text_width = _.round(this.w / 2) + 30;
 					var lastfm_charts_bar_x = this.x + this.text_x + this.text_width + 10;
@@ -38,23 +47,19 @@ _.mixin({
 						gr.GdiDrawText(_.formatNumber(this.data[i + this.offset].scrobbles, ","), panel.fonts.normal, panel.colours.text, lastfm_charts_bar_x + bar_width + 5, this.y + 16 + (i * panel.row_height), 60, panel.row_height, LEFT);
 					}
 					break;
-				} else {
-					this.text_x = 0;
-					this.text_width = this.w;
-					for (var i = 0; i < Math.min(this.items, this.rows); i++) {
-						gr.GdiDrawText(this.data[i + this.offset].name, panel.fonts.normal, panel.colours.text, this.x, this.y + 16 + (i * panel.row_height), this.text_width, panel.row_height, LEFT);
-					}
 				}
 				break;
 			case "musicbrainz":
-				if (this.mb_mode == 0) {
+				switch (this.mb_mode) {
+				case 0:
 					this.text_x = 0;
 					this.text_width = this.w - this.spacer_w - 10;
 					for (var i = 0; i < Math.min(this.items, this.rows); i++) {
 						gr.GdiDrawText(this.data[i + this.offset].name, panel.fonts.normal, this.data[i + this.offset].width == 0 ? panel.colours.highlight : panel.colours.text, this.x + this.text_x, this.y + 16 + (i * panel.row_height), this.text_width, panel.row_height, LEFT);
 						gr.GdiDrawText(this.data[i + this.offset].date, panel.fonts.normal, panel.colours.highlight, this.x, this.y + 16 + (i * panel.row_height), this.w, panel.row_height, RIGHT);
 					}
-				} else {
+					break;
+				case 1:
 					this.text_x = this.mb_icons ? 20 : 0;
 					this.text_width = this.w - this.text_x;
 					for (var i = 0; i < Math.min(this.items, this.rows); i++) {
@@ -63,6 +68,7 @@ _.mixin({
 							_.drawImage(gr, this.mb_images[this.data[i + this.offset].image], this.x, y + _.round((panel.row_height - 16) / 2), 16, 16);
 						gr.GdiDrawText(this.data[i + this.offset].name, panel.fonts.normal, panel.colours.text, this.x + this.text_x, y, this.text_width, panel.row_height, LEFT);
 					}
+					break;
 				}
 				break;
 			case "properties":
@@ -617,9 +623,9 @@ _.mixin({
 				if (this.mb_id.length != 36)
 					return panel.console("Invalid/missing MBID");
 				if (this.mb_mode == 0)
-					var url = "https://musicbrainz.org/ws/2/release-group?fmt=json&limit=100&offset=" + this.mb_offset + "&artist=" + this.mb_id;
+					var url = "https://beta.musicbrainz.org/ws/2/release-group?fmt=json&limit=100&offset=" + this.mb_offset + "&artist=" + this.mb_id;
 				else
-					var url = "https://musicbrainz.org/ws/2/artist/" + this.mb_id + "?fmt=json&inc=url-rels";
+					var url = "https://beta.musicbrainz.org/ws/2/artist/" + this.mb_id + "?fmt=json&inc=url-rels";
 				break;
 			default:
 				return;
@@ -693,7 +699,7 @@ _.mixin({
 								var a = item.getElementsByTagName("a");
 								var name = a[0].innerText;
 								return {
-									rank : td[0].innerText,
+									rank : _.trim(td[0].innerText),
 									name : name,
 									url : "http://www.last.fm/music/" + name,
 									scrobbles : a[2].innerText.split(" ")[0]
@@ -710,7 +716,7 @@ _.mixin({
 								var artist = a[b].innerText;
 								var title = a[b + 1].innerText;
 								return {
-									rank : td[0].innerText,
+									rank : _.trim(td[0].innerText),
 									name : artist + " - " + title,
 									url : "http://www.last.fm/music/" + artist + sep + title,
 									scrobbles : a[b + 3].innerText.split(" ")[0]
