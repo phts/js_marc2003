@@ -410,8 +410,8 @@ _.mixin({
 		this.h = h;
 		this.fn = fn;
 		this.tiptext = tiptext;
-		this.img_normal = _.img(img_src.normal);
-		this.img_hover = img_src.hover ? _.img(img_src.hover) : this.img_normal;
+		this.img_normal = typeof img_src.normal == "string" ? _.img(img_src.normal) : img_src.normal;
+		this.img_hover = img_src.hover ? (typeof img_src.hover == "string" ? _.img(img_src.hover) : img_src.hover) : this.img_normal;
 		this.img = this.img_normal;
 	},
 	buttons : function () {
