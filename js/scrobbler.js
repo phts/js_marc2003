@@ -26,6 +26,7 @@ _.mixin({
 					// still check to see if a track is loved even if it is too short to scrobble
 					this.get("track.getInfo", fb.GetNowPlaying());
 				} else {
+					this.attempt = 1;
 					this.post("track.scrobble", fb.GetNowPlaying());
 				}
 				break;
@@ -170,8 +171,18 @@ _.mixin({
 					else if (data.accepted == 1)
 						panel.console("Track scrobbled successfully.");
 					else {
-						panel.console("Unexpected submission server response.");
-						this.xmlhttp.responsetext && fb.trace(this.xmlhttp.responsetext);
+						if (this.attempt == 1)
+							panel.console("Unexpected submission server response.");
+						if (this.attempt < 5) {
+							this.attempt++;
+							panel.console("Retrying...");
+							window.SetTimeout(_.bind(function () {
+								this.post(method, metadb);
+							}, this), 1000);
+						} else {
+							panel.console("Submission failed.");
+						}
+						return;
 					}
 					if (!this.loved_working && !this.playcount_working) {
 						panel.console("Now fetching playcount...");
