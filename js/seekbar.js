@@ -84,6 +84,11 @@ _.mixin({
 			return _.ceil(this.w * (this.drag ? this.drag_seek : fb.PlaybackTime / fb.PlaybackLength));
 		}
 		
+		this.interval_func = _.bind(function () {
+			if (fb.IsPlaying && !fb.IsPaused && fb.PlaybackLength > 0)
+				this.playback_seek();
+		}, this);
+		
 		this.x = x;
 		this.y = y;
 		this.w = w;
@@ -93,9 +98,6 @@ _.mixin({
 		this.hover = false;
 		this.drag = false;
 		this.drag_seek = 0;
-		window.SetInterval(function () {
-			if (fb.IsPlaying && !fb.IsPaused && fb.PlaybackLength > 0)
-				on_playback_seek();
-		}, 150);
+		window.SetInterval(this.interval_func, 150);
 	}
 });
