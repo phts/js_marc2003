@@ -295,11 +295,19 @@ _.mixin({
 			gr.DrawRect(src_x, src_y, src_w - 1, src_h - 1, 1, border);
 		return [src_x, src_y, src_w, src_h];
 	},
-	tf : function (pattern, metadb) {
-		return metadb ? fb.TitleFormat(pattern).EvalWithMetadb(metadb) : "";
+	tf : function (t, metadb) {
+		if (!metadb)
+			return "";
+		var tfo = fb.TitleFormat(t);
+		var str = tfo.EvalWithMetadb(metadb);
+		tfo.Dispose();
+		return str;
 	},
-	tfe : function (pattern, force) {
-		return fb.TitleFormat(pattern).Eval(force);
+	tfe : function (t, force) {
+		var tfo = fb.TitleFormat(t);
+		var str = tfo.Eval(force);
+		tfo.Dispose();
+		return str;
 	},
 	jsonParse : function (value, path) {
 		try {
