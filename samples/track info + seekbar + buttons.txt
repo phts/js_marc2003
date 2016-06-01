@@ -89,12 +89,12 @@ function on_playback_stop() {
 
 function on_playback_pause() {
 	buttons.update();
-	window.RepaintRect(buttons.buttons.play.x, buttons.buttons.play.y, buttons.buttons.play.w, buttons.buttons.play.h);
+	window.Repaint();
 }
 
 function on_playback_starting() {
 	buttons.update();
-	window.RepaintRect(buttons.buttons.play.x, buttons.buttons.play.y, buttons.buttons.play.w, buttons.buttons.play.h);
+	window.Repaint();
 }
 
 function on_mouse_wheel(s) {
