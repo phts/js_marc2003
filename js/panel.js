@@ -78,6 +78,9 @@ _.mixin({
 				this.fonts.name = "Segoe UI";
 				this.console("Unable to use default font. Using " + this.fonts.name + " instead.");
 			}
+			_.dispose(this.fonts.title);
+			_.dispose(this.fonts.normal);
+			_.dispose(this.fonts.fixed);
 			this.fonts.title = _.gdiFont(this.fonts.name, 12, 1);
 			this.fonts.normal = _.gdiFont(this.fonts.name, this.fonts.size);
 			this.fonts.fixed = _.gdiFont("Lucida Console", this.fonts.size);
