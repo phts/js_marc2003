@@ -6,6 +6,7 @@ _.mixin({
 		}
 		
 		this.playback_new_track = function () {
+			this.metadb = fb.GetNowPlaying();
 			this.time_elapsed = 0;
 			this.target_time = Math.min(_.ceil(fb.PlaybackLength / 2), 240);
 		}
@@ -15,19 +16,19 @@ _.mixin({
 			switch (true) {
 			case !this.enabled:
 				return;
-			case this.time_elapsed == 2 && fb.IsMetadbInMediaLibrary(fb.GetNowPlaying()):
-				this.post("track.updateNowPlaying", fb.GetNowPlaying());
+			case this.time_elapsed == 2 && fb.IsMetadbInMediaLibrary(this.metadb):
+				this.post("track.updateNowPlaying", this.metadb);
 				break;
 			case this.time_elapsed == this.target_time:
-				if (!fb.IsMetadbInMediaLibrary(fb.GetNowPlaying())) {
+				if (!fb.IsMetadbInMediaLibrary(this.metadb)) {
 					panel.console("Skipping... Track not in Media Library.");
 				} else if (fb.PlaybackLength < this.min_length) {
 					panel.console("Not submitting. Track too short.");
 					// still check to see if a track is loved even if it is too short to scrobble
-					this.get("track.getInfo", fb.GetNowPlaying());
+					this.get("track.getInfo", this.metadb);
 				} else {
 					this.attempt = 1;
-					this.post("track.scrobble", fb.GetNowPlaying());
+					this.post("track.scrobble", this.metadb);
 				}
 				break;
 			}
@@ -441,6 +442,7 @@ _.mixin({
 		this.last_page = 0;
 		this.enabled = window.GetProperty("2K3.SCROBBLER.ENABLED", true);
 		this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		this.metadb = fb.GetNowPlaying();
 		window.SetInterval(this.interval_func, 15000);
 	}
 });
