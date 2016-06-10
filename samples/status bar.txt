@@ -66,10 +66,12 @@ function on_mouse_lbtn_dblclk() {
 
 function on_mouse_rbtn_up(x, y) {
 	var m = window.CreatePopupMenu();
+	var s = window.CreatePopupMenu();
 	var c = fb.CreateContextMenuManager();
 	if (fb.IsPlaying) {
 		c.InitNowPlaying();
-		c.BuildMenu(m, 1, -1);
+		c.BuildMenu(s, 1, -1);
+		s.AppendTo(m, MF_STRING, "Now playing");
 		m.AppendMenuSeparator();
 	}
 	m.AppendMenuItem(MF_STRING, 10000, "Show playlist name");
@@ -122,6 +124,7 @@ function on_mouse_rbtn_up(x, y) {
 		break;
 	}
 	m.Dispose();
+	s.Dispose();
 	c.Dispose();
 	return true;
 }
