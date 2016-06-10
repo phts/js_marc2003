@@ -99,7 +99,7 @@ _.mixin({
 				this.update();
 				break;
 			case this.mode == "musicbrainz":
-				var temp_artist = panel.tf(panel.artist_tf);
+				var temp_artist = panel.tf(DEFAULT_ARTIST);
 				var temp_id = panel.tf("$if3($meta(musicbrainz_artistid,0),$meta(musicbrainz artist id,0),)");
 				if (this.artist == temp_artist && this.mb_id == temp_id)
 					return;
@@ -342,7 +342,7 @@ _.mixin({
 				panel.m.CheckMenuRadioItem(3200, 3201, this.mb_mode + 3200);
 				panel.m.AppendMenuSeparator();
 				if (this.mb_id.length != 36) {
-					panel.m.AppendMenuItem(MF_STRING, 3203, "MBID Missing: Search Musicbrainz website for this artist");
+					panel.m.AppendMenuItem(MF_STRING, 3203, "Artist MBID missing. Use Musicbrainz Picard or foo_musicbrainz to tag your files.");
 					panel.m.AppendMenuSeparator();
 				}
 				if (this.mb_mode == 1) {
