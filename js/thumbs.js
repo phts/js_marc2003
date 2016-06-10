@@ -289,14 +289,18 @@ _.mixin({
 			panel.m.AppendMenuSeparator();
 			switch (this.source) {
 			case 0: // last.fm
-				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4005, "Download now");
-				panel.m.AppendMenuItem(MF_STRING, 4006, "Automatic download");
-				panel.m.CheckMenuItem(4006, this.auto_download);
+				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4002, "Download now");
+				panel.s10.AppendMenuItem(MF_GRAYED, 4003, "Automatic download");
+				panel.s10.AppendMenuItem(MF_STRING, 4004, "On");
+				panel.s10.AppendMenuItem(MF_STRING, 4005, "Off");
+				panel.s10.CheckMenuRadioItem(4004, 4005, this.auto_download ? 4004 : 4005);
+				panel.s10.AppendMenuSeparator();
+				panel.s10.AppendMenuItem(MF_GRAYED, 4009, "Limit");
 				_.forEach(this.download_limits, function (item) {
 					panel.s10.AppendMenuItem(MF_STRING, item + 4010, item);
 				});
 				panel.s10.CheckMenuRadioItem(_.first(this.download_limits) + 4010, _.last(this.download_limits) + 4010, this.download_limit + 4010);
-				panel.s10.AppendTo(panel.m, MF_STRING, "Limit");
+				panel.s10.AppendTo(panel.m, MF_STRING, "Server options");
 				break;
 			case 1: // custom folder
 				panel.m.AppendMenuItem(MF_STRING, 4040, "Refresh");
@@ -360,11 +364,12 @@ _.mixin({
 				this.folder = "";
 				panel.item_focus_change();
 				break;
-			case 4005:
+			case 4002:
 				this.download();
 				break;
-			case 4006:
-				this.auto_download = !this.auto_download;
+			case 4004:
+			case 4005:
+				this.auto_download = idx == 4004;
 				window.SetProperty("2K3.THUMBS.AUTO.DOWNLOAD", this.auto_download);
 				break;
 			case 4011:
