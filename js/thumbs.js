@@ -480,7 +480,7 @@ _.mixin({
 			this.files = _.getFiles(this.folder, this.exts, this.sort == 0);
 			if (this.source == 0 && this.files.length > 1) {
 				this.default_file = this.folder + utils.ReadINI(this.ini_file, "Defaults", _.q(_.fbSanitise(this.artist)));
-				var tmp = _.indexOf(this.files, this.default_file)
+				var tmp = _.indexOf(this.files, this.default_file);
 				if (tmp > -1) {
 					this.files.splice(tmp, 1);
 					this.files.unshift(this.default_file);
