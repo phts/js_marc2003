@@ -10,6 +10,12 @@ _.mixin({
 			UIHacks.MaxSize = false;
 		}
 		
+		this.enable = function () {
+			UIHacks.MainMenuState = this.MainMenuState.Hide;
+			UIHacks.FrameStyle = this.FrameStyle.NoBorder;
+			UIHacks.StatusBarState = false;
+		}
+		
 		this.set_caption = function (x, y, w, h) {
 			UIHacks.SetPseudoCaption(x, y, w, h);
 		}
