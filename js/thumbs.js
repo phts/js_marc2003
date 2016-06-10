@@ -523,7 +523,7 @@ _.mixin({
 				.filter({"className" : "image-list-image"})
 				.take(this.download_limit)
 				.forEach(function (item) {
-					var url = item.src.replace("avatar170s", "ar0");
+					var url = item.src.replace("avatar170s/", "");
 					var filename = base + url.substring(url.lastIndexOf("/") + 1) + ".jpg";
 					_.runCmd("cscript //nologo " + _.q(folders.home + "download.vbs") + " " + _.q(url) + " " + _.q(filename), false);
 				})
