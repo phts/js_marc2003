@@ -255,7 +255,7 @@ _.mixin({
 		this.selection = this.check_feature("metadb") ? window.GetProperty("2K3.PANEL.SELECTION", 0) : 0;
 		this.artist_tf = this.check_feature("remap") ? window.GetProperty("2K3.PANEL.ARTIST.TF", DEFAULT_ARTIST) : DEFAULT_ARTIST;
 		if (this.check_feature("custom_background")) {
-			this.colours.mode = window.GetProperty("2K3.PANEL.COLOURS.MODE", 1);
+			this.colours.mode = window.GetProperty("2K3.PANEL.COLOURS.MODE", 0);
 			this.colours.custom = window.GetProperty("2K3.PANEL.COLOURS.CUSTOM", "0-0-0");
 		}
 		this.colours_changed();
