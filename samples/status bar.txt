@@ -19,7 +19,6 @@ var show_volume = window.GetProperty("2K3.STATUS.SHOW.VOLUME", true);
 var font = _.gdiFont("Segoe UI", 11);
 var ww = 0;
 var wh = 0;
-var count = 0;
 var right_text = "";
 var right_text_width = 0;
 refresh();
@@ -150,7 +149,7 @@ function on_playlist_switch() {
 
 function refresh() {
 	var items = plman.GetPlaylistItems(plman.ActivePlaylist);
-	count = items.Count;
+	var count = items.Count;
 	var tmp = [];
 	if (show_name)
 		tmp.push(plman.GetPlaylistName(plman.ActivePlaylist));
