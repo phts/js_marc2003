@@ -590,6 +590,7 @@ _.mixin({
 				this.add_customdb();
 				this.add_stats();
 				this.add_rg();
+				this.data.pop();
 				_.forEach(this.data, function (item) {
 					item.width = _.textWidth(item.value, panel.fonts.normal);
 					this.text_x = Math.max(this.text_x, _.textWidth(item.name, panel.fonts.normal) + 20);
@@ -1013,10 +1014,10 @@ _.mixin({
 							});
 						}
 					}
+					this.add();
 				}
 				
 				this.add_location = function () {
-					this.add();
 					var names = ["FOLDER NAME", "FILE PATH", "SUBSONG INDEX", "FILE SIZE", "LAST MODIFIED"];
 					var values = [panel.tf("$directory_path(%path%)"), panel.metadb.Path, panel.metadb.Subsong, panel.tf("[%filesize_natural%]"), panel.tf("[%last_modified%]")];
 					var queries = ["\"$directory_path(%path%)\" IS ", "%path% IS ", "%subsong% IS ", "%filesize_natural% IS ", "%last_modified% IS "];
@@ -1027,10 +1028,10 @@ _.mixin({
 							query : queries[i] + values[i]
 						});
 					}
+					this.add();
 				}
 				
 				this.add_properties = function (f) {
-					this.add();
 					var duration = utils.FormatDuration(Math.max(0, panel.metadb.Length));
 					var samples = _.formatNumber(_.tf("%length_samples%", panel.metadb), " ");
 					this.data.push({
@@ -1047,25 +1048,26 @@ _.mixin({
 							query : "%__" + name.toLowerCase() + "% IS " + value
 						});
 					}
+					this.add();
 				}
 				
 				this.add_customdb = function () {
 					if (utils.CheckComponent("foo_customdb", true)) {
-						this.add();
 						this.add(["LASTFM_PLAYCOUNT_DB", "LASTFM_LOVED_DB"]);
+						this.add();
 					}
 				}
 				
 				this.add_stats = function () {
 					if (utils.CheckComponent("foo_playcount", true)) {
-						this.add();
 						this.add(["PLAY_COUNT", "FIRST_PLAYED", "LAST_PLAYED", "ADDED", "RATING"]);
+						this.add();
 					}
 				}
 				
 				this.add_rg = function () {
-					this.add();
 					this.add(["REPLAYGAIN_ALBUM_GAIN", "REPLAYGAIN_ALBUM_PEAK", "REPLAYGAIN_TRACK_GAIN", "REPLAYGAIN_TRACK_PEAK"]);
+					this.add();
 				}
 				
 				this.add = function (names) {
