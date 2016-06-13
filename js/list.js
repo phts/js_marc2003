@@ -351,6 +351,21 @@ _.mixin({
 					panel.m.AppendMenuSeparator();
 				}
 				break;
+			case "properties":
+				panel.m.AppendMenuItem(MF_STRING, 3300, "Metadata");
+				panel.m.CheckMenuItem(3300, this.properties.meta);
+				panel.m.AppendMenuItem(MF_STRING, 3301, "Location");
+				panel.m.CheckMenuItem(3301, this.properties.location);
+				panel.m.AppendMenuItem(MF_STRING, 3302, "Tech Info");
+				panel.m.CheckMenuItem(3302, this.properties.tech);
+				panel.m.AppendMenuItem(utils.CheckComponent("foo_customdb", true) ? MF_STRING : MF_GRAYED, 3303, "Last.fm Playcount (foo_customdb)");
+				panel.m.CheckMenuItem(3303, this.properties.customdb);
+				panel.m.AppendMenuItem(utils.CheckComponent("foo_playcount", true) ? MF_STRING : MF_GRAYED, 3304, "Playback Statistics (foo_playcount)");
+				panel.m.CheckMenuItem(3304, this.properties.playcount);
+				panel.m.AppendMenuItem(MF_STRING, 3305, "Replaygain");
+				panel.m.CheckMenuItem(3305, this.properties.rg);
+				panel.m.AppendMenuSeparator();
+				break;
 			}
 			panel.m.AppendMenuItem(_.isFile(this.filename) ? MF_STRING : MF_GRAYED, 3999, "Open containing folder");
 			panel.m.AppendMenuSeparator();
@@ -433,6 +448,36 @@ _.mixin({
 				this.mb_icons = !this.mb_icons;
 				window.SetProperty("2K3.LIST.MUSICBRAINZ.SHOW.ICONS", this.mb_icons);
 				window.RepaintRect(this.x, this.y, this.w, this.h);
+				break;
+			case 3300:
+				this.properties.meta = !this.properties.meta;
+				window.SetProperty("2K3.LIST.PROPERTIES.META", this.properties.meta);
+				panel.item_focus_change();
+				break;
+			case 3301:
+				this.properties.location = !this.properties.location;
+				window.SetProperty("2K3.LIST.PROPERTIES.LOCATION", this.properties.location);
+				panel.item_focus_change();
+				break;
+			case 3302:
+				this.properties.tech = !this.properties.tech;
+				window.SetProperty("2K3.LIST.PROPERTIES.TECH", this.properties.tech);
+				panel.item_focus_change();
+				break;
+			case 3303:
+				this.properties.customdb = !this.properties.customdb;
+				window.SetProperty("2K3.LIST.PROPERTIES.CUSTOMDB", this.properties.customdb);
+				panel.item_focus_change();
+				break;
+			case 3304:
+				this.properties.playcount = !this.properties.playcount;
+				window.SetProperty("2K3.LIST.PROPERTIES.PLAYCOUNT", this.properties.playcount);
+				panel.item_focus_change();
+				break;
+			case 3305:
+				this.properties.rg = !this.properties.rg;
+				window.SetProperty("2K3.LIST.PROPERTIES.RG", this.properties.rg);
+				panel.item_focus_change();
 				break;
 			case 3999:
 				_.explorer(this.filename);
@@ -584,12 +629,18 @@ _.mixin({
 				this.text_x = 0;
 				this.filename = panel.metadb.Path;
 				var fileinfo = panel.metadb.GetFileInfo();
-				this.add_meta(fileinfo);
-				this.add_location();
-				this.add_properties(fileinfo);
-				this.add_customdb();
-				this.add_stats();
-				this.add_rg();
+				if (this.properties.meta)
+					this.add_meta(fileinfo);
+				if (this.properties.location)
+					this.add_location();
+				if (this.properties.tech)
+					this.add_tech(fileinfo);
+				if (utils.CheckComponent("foo_customdb", true) && this.properties.customdb)
+					this.add_customdb();
+				if (utils.CheckComponent("foo_playcount", true) && this.properties.playcount)
+					this.add_playcount();
+				if (this.properties.rg)
+					this.add_rg();
 				this.data.pop();
 				_.forEach(this.data, function (item) {
 					item.width = _.textWidth(item.value, panel.fonts.normal);
@@ -1031,7 +1082,7 @@ _.mixin({
 					this.add();
 				}
 				
-				this.add_properties = function (f) {
+				this.add_tech = function (f) {
 					var duration = utils.FormatDuration(Math.max(0, panel.metadb.Length));
 					var samples = _.formatNumber(_.tf("%length_samples%", panel.metadb), " ");
 					this.data.push({
@@ -1052,17 +1103,13 @@ _.mixin({
 				}
 				
 				this.add_customdb = function () {
-					if (utils.CheckComponent("foo_customdb", true)) {
-						this.add(["LASTFM_PLAYCOUNT_DB", "LASTFM_LOVED_DB"]);
-						this.add();
-					}
+					this.add(["LASTFM_PLAYCOUNT_DB", "LASTFM_LOVED_DB"]);
+					this.add();
 				}
 				
-				this.add_stats = function () {
-					if (utils.CheckComponent("foo_playcount", true)) {
-						this.add(["PLAY_COUNT", "FIRST_PLAYED", "LAST_PLAYED", "ADDED", "RATING"]);
-						this.add();
-					}
+				this.add_playcount = function () {
+					this.add(["PLAY_COUNT", "FIRST_PLAYED", "LAST_PLAYED", "ADDED", "RATING"]);
+					this.add();
 				}
 				
 				this.add_rg = function () {
@@ -1082,6 +1129,15 @@ _.mixin({
 					} else {
 						this.data.push({"name" : "", "value" : "", "query" : ""});
 					}
+				}
+				
+				this.properties = {
+					meta : window.GetProperty("2K3.LIST.PROPERTIES.META", true),
+					location : window.GetProperty("2K3.LIST.PROPERTIES.LOCATION", true),
+					tech : window.GetProperty("2K3.LIST.PROPERTIES.TECH", true),
+					customdb : window.GetProperty("2K3.LIST.PROPERTIES.CUSTOMDB", true),
+					playcount : window.GetProperty("2K3.LIST.PROPERTIES.PLAYCOUNT", true),
+					rg: window.GetProperty("2K3.LIST.PROPERTIES.RG", true)
 				}
 				break;
 			}
