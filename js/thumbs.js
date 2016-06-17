@@ -308,18 +308,20 @@ _.mixin({
 				break;
 			}
 			panel.m.AppendMenuSeparator();
-			_.forEach(this.modes, function (item, i) {
-				panel.s11.AppendMenuItem(MF_STRING, i + 4050, _.capitalize(item));
-			});
-			panel.s11.CheckMenuRadioItem(4050, 4055, this.mode + 4050);
-			panel.s11.AppendMenuSeparator();
-			var flag = this.modes[this.mode] == "off" ? MF_GRAYED : MF_STRING;
-			_.forEach(this.pxs, function (item) {
-				panel.s11.AppendMenuItem(flag, item + 4100, item + "px");
-			});
-			panel.s11.CheckMenuRadioItem(_.first(this.pxs) + 4100, _.last(this.pxs) + 4100, this.px + 4100);
-			panel.s11.AppendTo(panel.m, MF_STRING, "Thumbs");
-			panel.m.AppendMenuSeparator();
+			if (panel.name != "np_basic") {
+				_.forEach(this.modes, function (item, i) {
+					panel.s11.AppendMenuItem(MF_STRING, i + 4050, _.capitalize(item));
+				});
+				panel.s11.CheckMenuRadioItem(4050, 4055, this.mode + 4050);
+				panel.s11.AppendMenuSeparator();
+				var flag = this.modes[this.mode] == "off" ? MF_GRAYED : MF_STRING;
+				_.forEach(this.pxs, function (item) {
+					panel.s11.AppendMenuItem(flag, item + 4100, item + "px");
+				});
+				panel.s11.CheckMenuRadioItem(_.first(this.pxs) + 4100, _.last(this.pxs) + 4100, this.px + 4100);
+				panel.s11.AppendTo(panel.m, MF_STRING, "Thumbs");
+				panel.m.AppendMenuSeparator();
+			}
 			panel.s12.AppendMenuItem(MF_STRING, 4060, "Off");
 			panel.s12.AppendMenuItem(MF_STRING, 4065, "5 seconds");
 			panel.s12.AppendMenuItem(MF_STRING, 4070, "10 seconds");
