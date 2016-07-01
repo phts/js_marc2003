@@ -74,7 +74,7 @@ var popup = {
 	stop : 16,
 	question : 32,
 	info : 64
-}
+};
 
 var image = {
 	crop : 0,

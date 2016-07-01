@@ -1065,7 +1065,8 @@ _.mixin({
 							});
 						}
 					}
-					this.add();
+					if (this.data.length > 0) // only add blank line if there is some metadata
+						this.add();
 				}
 				
 				this.add_location = function () {
