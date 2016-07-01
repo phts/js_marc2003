@@ -1059,7 +1059,7 @@ _.mixin({
 						for (var j = 0; j < num; j++) {
 							var value = f.MetaValue(i, j).replace(/\s{2,}/g, " ");
 							this.data.push({
-								name : num == 1 || j == 0 ? name.toUpperCase() : "",
+								name : j == 0 ? name.toUpperCase() : "",
 								value : value,
 								query : name.toLowerCase() + (num == 1 ? " IS " : " HAS ") + value
 							});
@@ -1070,10 +1070,10 @@ _.mixin({
 				}
 				
 				this.add_location = function () {
-					var names = ["FOLDER NAME", "FILE PATH", "SUBSONG INDEX", "FILE SIZE", "LAST MODIFIED"];
-					var values = [panel.tf("$directory_path(%path%)"), panel.metadb.Path, panel.metadb.Subsong, panel.tf("[%filesize_natural%]"), panel.tf("[%last_modified%]")];
-					var queries = ["\"$directory_path(%path%)\" IS ", "%path% IS ", "%subsong% IS ", "%filesize_natural% IS ", "%last_modified% IS "];
-					for (var i = 0; i < 5; i++) {
+					var names = ["FILE NAME", "FOLDER NAME", "FILE PATH", "SUBSONG INDEX", "FILE SIZE", "LAST MODIFIED"];
+					var values = [panel.tf("%filename_ext%"), panel.tf("$directory_path(%path%)"), this.filename, panel.metadb.Subsong, panel.tf("[%filesize_natural%]"), panel.tf("[%last_modified%]")];
+					var queries = ["%filename_ext% IS ", "\"$directory_path(%path%)\" IS ", "%path% IS ", "%subsong% IS ", "%filesize_natural% IS ", "%last_modified% IS "];
+					for (var i = 0; i < 6; i++) {
 						this.data.push({
 							name : names[i],
 							value : values[i],
