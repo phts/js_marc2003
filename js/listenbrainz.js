@@ -227,6 +227,6 @@ _.mixin({
 			"musicbrainz album status" : "releasestatus",
 			"musicbrainz album type" : "releasetype",
 			"titlesortorder" : "titlesort"
-		}
+		};
 	}
 });
