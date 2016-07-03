@@ -10,25 +10,25 @@
 
 //the track info section displays 3 lines of title formatted text. you can customise that here/////////////////////////////////////////////
 var line1 = {
-	text: "", // leave this blank
-	tf: "%artist%", // enter any title formatting
-	font: _.gdiFont("Segoe UI", 20, 1), // font name, size, style. 1 means bold and 0 is normal.
-	colour: _.RGB(240, 240, 240), // colour
-	y: 0 // change this value to move text up or down.
+	text : "", // leave this blank
+	tf : "%artist%", // enter any title formatting
+	font : _.gdiFont("Segoe UI", 20, 1), // font name, size, style. 1 means bold and 0 is normal.
+	colour : _.RGB(240, 240, 240), // colour
+	y : 0 // change this value to move text up or down.
 };
 var line2 = {
-	text: "",
-	tf: "%title%",
-	font: _.gdiFont("Segoe UI", 16, 1),
-	colour: _.RGB(210, 210, 210),
-	y: 30
+	text : "",
+	tf : "%title%",
+	font : _.gdiFont("Segoe UI", 16, 1),
+	colour : _.RGB(210, 210, 210),
+	y : 30
 };
 var line3 = {
-	text: "",
-	tf: "[%album% ]['('%date%')']",
-	font: _.gdiFont("Segoe UI", 14, 1),
-	colour: _.RGB(180, 180, 180),
-	y: 55
+	text : "",
+	tf : "[%album% ]['('%date%')']",
+	font : _.gdiFont("Segoe UI", 14, 1),
+	colour : _.RGB(180, 180, 180),
+	y : 55
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -1138,7 +1138,7 @@ _.mixin({
 					tech : window.GetProperty("2K3.LIST.PROPERTIES.TECH", true),
 					customdb : window.GetProperty("2K3.LIST.PROPERTIES.CUSTOMDB", true),
 					playcount : window.GetProperty("2K3.LIST.PROPERTIES.PLAYCOUNT", true),
-					rg: window.GetProperty("2K3.LIST.PROPERTIES.RG", true)
+					rg : window.GetProperty("2K3.LIST.PROPERTIES.RG", true)
 				};
 				break;
 			}
