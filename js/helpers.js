@@ -1,3 +1,6 @@
+if (!("GetQueryItems" in fb))
+	fb.ShowPopupMessage("This script requires JScript Panel v1.1.0 or above.\n\nhttps://github.com/19379/foo-jscript-panel/releases");
+
 var DT_LEFT = 0x00000000;
 var DT_CENTER = 0x00000001;
 var DT_RIGHT = 0x00000002;
