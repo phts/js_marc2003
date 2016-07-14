@@ -67,7 +67,7 @@ _.mixin({
 		this.hrating = 0;
 		this.guifx_font = _.gdiFont(guifx.font, this.h - 4, 0);
 		this.tiptext_tf = "Rate \"%title%\" by \"%artist%\".";
-		if (!utils.CheckComponent("foo_playcount", true))
+		if (!_.cc("foo_playcount", true))
 			window.SetTimeout(function () {
 				WshShell.popup("This script requires foo_playcount.", 0, panel.name, popup.stop);
 			}, 500);

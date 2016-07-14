@@ -45,7 +45,11 @@ var fso = new ActiveXObject("Scripting.FileSystemObject");
 var vb = new ActiveXObject("ScriptControl");
 vb.Language = "VBScript";
 
-var tooltip = window.CreateTooltip(window.GetProperty("2K3.TOOLTIP.FONT.NAME", "Segoe UI"), window.GetProperty("2K3.TOOLTIP.FONT.SIZE", 12), window.GetProperty("2K3.TOOLTIP.FONT.STYLE", 0));
+var tooltip = window.CreateTooltip(
+	window.GetProperty("2K3.TOOLTIP.FONT.NAME", "Segoe UI"),
+	window.GetProperty("2K3.TOOLTIP.FONT.SIZE", 12),
+	window.GetProperty("2K3.TOOLTIP.FONT.STYLE", 0)
+);
 tooltip.SetMaxWidth(800);
 
 var folders = {};
@@ -96,6 +100,9 @@ var ha_links = [
 ];
 
 _.mixin({
+	cc : function (name) {
+		return utils.CheckComponent(name, true);
+	},
 	dispose : function (o) {
 		o && o.Dispose();
 	},
@@ -541,7 +548,7 @@ _.mixin({
 		s4.AppendTo(m1, MF_STRING, "Playback");
 		s5.AppendTo(m1, MF_STRING, "Library");
 		s6.AppendTo(m1, MF_STRING, "Help");
-		if (utils.CheckComponent("foo_ui_hacks", true) && utils.CheckComponent("foo_ui_columns", true)) {
+		if (_.cc("foo_ui_hacks") && _.cc("foo_ui_columns")) {
 			m1.AppendMenuSeparator();
 			m1.AppendMenuItem(MF_STRING, 1, "Switch UI");
 		}

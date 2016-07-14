@@ -358,9 +358,9 @@ _.mixin({
 				panel.m.CheckMenuItem(3301, this.properties.location);
 				panel.m.AppendMenuItem(MF_STRING, 3302, "Tech Info");
 				panel.m.CheckMenuItem(3302, this.properties.tech);
-				panel.m.AppendMenuItem(utils.CheckComponent("foo_customdb", true) ? MF_STRING : MF_GRAYED, 3303, "Last.fm Playcount (foo_customdb)");
+				panel.m.AppendMenuItem(_.cc("foo_customdb") ? MF_STRING : MF_GRAYED, 3303, "Last.fm Playcount (foo_customdb)");
 				panel.m.CheckMenuItem(3303, this.properties.customdb);
-				panel.m.AppendMenuItem(utils.CheckComponent("foo_playcount", true) ? MF_STRING : MF_GRAYED, 3304, "Playback Statistics (foo_playcount)");
+				panel.m.AppendMenuItem(_.cc("foo_playcount") ? MF_STRING : MF_GRAYED, 3304, "Playback Statistics (foo_playcount)");
 				panel.m.CheckMenuItem(3304, this.properties.playcount);
 				panel.m.AppendMenuItem(MF_STRING, 3305, "Replaygain");
 				panel.m.CheckMenuItem(3305, this.properties.rg);
@@ -635,9 +635,9 @@ _.mixin({
 					this.add_location();
 				if (this.properties.tech)
 					this.add_tech(fileinfo);
-				if (utils.CheckComponent("foo_customdb", true) && this.properties.customdb)
+				if (_.cc("foo_customdb") && this.properties.customdb)
 					this.add_customdb();
-				if (utils.CheckComponent("foo_playcount", true) && this.properties.playcount)
+				if (_.cc("foo_playcount") && this.properties.playcount)
 					this.add_playcount();
 				if (this.properties.rg)
 					this.add_rg();
