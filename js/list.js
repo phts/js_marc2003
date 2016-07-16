@@ -614,9 +614,19 @@ _.mixin({
 				} else {
 					this.filename = panel.new_artist_folder(this.artist) + "musicbrainz.links." + this.mb_id + ".json";
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename), "relations");
-						data.unshift({url : {resource : "https://musicbrainz.org/artist/" + this.mb_id }});
-						this.data = _.map(data, this.mb_parse_urls);
+						var url = "https://musicbrainz.org/artist/" + this.mb_id;
+						this.data = _(_.jsonParse(_.open(this.filename), "relations"))
+							.map(this.mb_parse_urls)
+							.sortBy(function (item) {
+								return item.name.split("//")[1].replace("www.", "");
+							})
+							.value();
+						this.data.unshift({
+							name : url,
+							url : url,
+							width : _.textWidth(url, panel.fonts.normal),
+							image : "musicbrainz"
+						});
 						this.items = this.data.length;
 						if (_.fileExpired(this.filename, ONE_DAY))
 							this.get();
