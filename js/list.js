@@ -506,10 +506,11 @@ _.mixin({
 			this.spacer_w = _.textWidth("0000", panel.fonts.normal);
 			switch (this.mode) {
 			case "autoplaylists":
-				this.data = _.jsonParse(_.open(this.filename));
-				_.forEach(this.data, function (item) {
-					item.width = _.textWidth(item.name, panel.fonts.normal);
-				});
+				this.data = _(_.jsonParse(_.open(this.filename)))
+					.forEach(function (item) {
+						item.width = _.textWidth(item.name, panel.fonts.normal);
+					})
+					.value();
 				this.items = this.data.length;
 				break;
 			case "lastfm_info":
@@ -526,14 +527,15 @@ _.mixin({
 				case 0:
 					this.filename = panel.new_artist_folder(this.artist) + "lastfm." + this.lastfm_artist_methods[this.lastfm_artist_method].method + ".json";
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename), this.lastfm_artist_methods[this.lastfm_artist_method].json);
-						this.data = _.map(data, function (item) {
-							return {
-								name : item.name,
-								width : _.textWidth(item.name, panel.fonts.normal),
-								url : item.url
-							};
-						});
+						this.data = _(_.jsonParse(_.open(this.filename), this.lastfm_artist_methods[this.lastfm_artist_method].json))
+							.map(function (item) {
+								return {
+									name : item.name,
+									width : _.textWidth(item.name, panel.fonts.normal),
+									url : item.url
+								};
+							})
+							.value();
 						this.items = this.data.length;
 						if (_.fileExpired(this.filename, ONE_DAY))
 							this.get();
@@ -544,10 +546,11 @@ _.mixin({
 				case 1:
 					this.filename = folders.lastfm + lastfm.username + "." + this.lastfm_charts_methods[this.lastfm_charts_method] + "." + this.lastfm_charts_periods[this.lastfm_charts_period].period + ".json";
 					if (_.isFile(this.filename)) {
-						this.data = _.jsonParse(_.open(this.filename));
-						_.forEach(this.data, function (item) {
-							item.width = _.textWidth(item.name, panel.fonts.normal);
-						});
+						this.data = _(_.jsonParse(_.open(this.filename)))
+							.forEach(function (item) {
+								item.width = _.textWidth(item.name, panel.fonts.normal);
+							})
+							.value();
 						this.items = this.data.length;
 						if (_.fileExpired(this.filename, ONE_DAY))
 							this.get();
@@ -558,15 +561,19 @@ _.mixin({
 				case 2:
 					this.filename = folders.lastfm + lastfm.username + ".user.getRecentTracks.json";
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename), "recenttracks.track");
-						_.forEach(data, function (item) {
-							var name = item.artist["#text"] + " - " + item.name;
-							if (!item["@attr"]) this.data.push({
-								name : name,
-								width : _.textWidth(name, panel.fonts.normal),
-								url : item.url
-							});
-						}, this);
+						this.data = _(_.jsonParse(_.open(this.filename), "recenttracks.track"))
+							.filter(function (item) {
+								return !item["@attr"];
+							})
+							.map(function (item) {
+								var name = item.artist["#text"] + " - " + item.name;
+								return {
+									name : name,
+									width : _.textWidth(name, panel.fonts.normal),
+									url : item.url
+								};
+							})
+							.value();
 						this.items = this.data.length;
 					}
 					break;
