@@ -31,8 +31,7 @@ _.mixin({
 					this.content = "";
 					this.allmusic_url = false;
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename));
-						this.content = data[0];
+						this.content = _.jsonParse(_.open(this.filename))[0];
 						// content is static so only check for updates if no review found previously
 						if (this.content.length == 0 && _.fileExpired(this.filename, ONE_DAY))
 							this.get();
@@ -48,8 +47,7 @@ _.mixin({
 					this.content = "";
 					this.filename = panel.new_artist_folder(this.artist) + "bio." + _.fbSanitise(this.bio_lastfm_sites[this.bio_lastfm_site]) + ".json";
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename));
-						this.content = data[0];
+						this.content = _.jsonParse(_.open(this.filename))[0];
 						if (!_.isString(this.content))
 							this.content = "It appears the cached file has been corrupted. Use the right click menu>Force Update to try again.";
 						if (_.fileExpired(this.filename, ONE_DAY))
@@ -66,8 +64,7 @@ _.mixin({
 					this.content = "";
 					if (_.isFolder(this.filename)) { // yes really!
 						var folder = this.filename + "\\";
-						var files = _.getFiles(folder, this.exts);
-						this.content = _.open(files[0]);
+						this.content = _.open(_.getFiles(folder, this.exts)[0]);
 					} else if (_.isFile(this.filename)) {
 						this.content = _.open(this.filename);
 					}
