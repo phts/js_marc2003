@@ -308,7 +308,7 @@ _.mixin({
 				break;
 			}
 			panel.m.AppendMenuSeparator();
-			if (panel.name != "np_basic") {
+			if (panel.text_objects.length == 0) {
 				_.forEach(this.modes, function (item, i) {
 					panel.s11.AppendMenuItem(MF_STRING, i + 4050, _.capitalize(item));
 				});
