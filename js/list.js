@@ -562,9 +562,7 @@ _.mixin({
 					this.filename = folders.lastfm + lastfm.username + ".user.getRecentTracks.json";
 					if (_.isFile(this.filename)) {
 						this.data = _(_.jsonParse(_.open(this.filename), "recenttracks.track"))
-							.filter(function (item) {
-								return !item["@attr"];
-							})
+							.filter("date")
 							.map(function (item) {
 								var name = item.artist["#text"] + " - " + item.name;
 								return {
