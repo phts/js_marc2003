@@ -1110,7 +1110,7 @@ _.mixin({
 					});
 					for (var i = 0; i < f.InfoCount; i++) {
 						var name = f.InfoName(i);
-						var value = panel.tf("%__" + name + "%");
+						var value = f.InfoValue(i);
 						this.data.push({
 							name : name.toUpperCase(),
 							value : value,
