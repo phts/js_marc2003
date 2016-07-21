@@ -187,7 +187,9 @@ _.mixin({
 					}
 					if (!this.loved_working && !this.playcount_working) {
 						panel.console("Now fetching playcount...");
-						this.get("track.getInfo", metadb);
+						window.SetTimeout(_.bind(function () {
+							this.get("track.getInfo", metadb);
+						}, this), 1000);
 					}
 				}
 				break;
