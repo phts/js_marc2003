@@ -8,7 +8,7 @@
 // @import "%fb2k_profile_path%js_marc2003\js\text.js"
 // ==/PREPROCESSOR==
 
-//the track info section displays 3 lines of title formatted text. you can customise that here/////////////////////////////////////////////
+// the track info section displays 3 lines of title formatted text. you can customise that here/////////////////////////////////////////////
 var line1 = {
 	text : "", // leave this blank
 	tf : "%artist%", // enter any title formatting
