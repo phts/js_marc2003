@@ -25,7 +25,6 @@ _.mixin({
 			_.dispose(this.img);
 			this.img = null;
 			this.tooltip = this.path = "";
-			_.tt("");
 			if (panel.metadb) {
 				this.img = utils.GetAlbumArtV2(panel.metadb, this.id);
 				utils.GetAlbumArtAsync(window.ID, panel.metadb, this.id, true, false, true);

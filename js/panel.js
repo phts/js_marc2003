@@ -50,6 +50,8 @@ _.mixin({
 					break;
 				}
 				on_metadb_changed();
+				if (!this.metadb)
+					_.tt("");
 			}
 		}
 		
