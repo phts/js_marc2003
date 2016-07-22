@@ -15,8 +15,8 @@ _.mixin({
 				this.rating = _.tf("$if2(%rating%,0)", panel.metadb);
 				this.tiptext = _.tf(this.tiptext_tf, panel.metadb);
 				this.hrating = this.rating;
-				window.RepaintRect(this.x, this.y, this.w, this.h);
 			}
+			window.RepaintRect(this.x, this.y, this.w, this.h);
 		}
 		
 		this.trace = function (x, y) {

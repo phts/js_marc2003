@@ -10,12 +10,6 @@
 var panel = new _.panel("Text Reader", ["metadb"]);
 var text = new _.text("text_reader", 10, 24, 0, 0);
 
-panel.item_focus_change = function () {
-	this.metadb = this.selection == 0 && fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
-	if (this.metadb)
-		text.metadb_changed();
-}
-
 panel.item_focus_change();
 
 function on_size() {

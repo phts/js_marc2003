@@ -71,9 +71,13 @@ _.mixin({
 					this.content = this.content.replace(/\t/g, "    ");
 					break;
 				}
-				this.update();
-				window.Repaint();
+			} else {
+				this.artist = "";
+				this.filename = "";
+				this.content = "";
 			}
+			this.update();
+			window.Repaint();
 		}
 		
 		this.trace = function (x, y) {

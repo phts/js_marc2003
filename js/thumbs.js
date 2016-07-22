@@ -168,6 +168,13 @@ _.mixin({
 					break;
 				}
 				this.update();
+			} else {
+				this.artist = "";
+				this.folder = "";
+				this.img = null;
+				_.map(this.images, _.dispose);
+				this.images = [];
+				window.Repaint();
 			}
 		}
 		

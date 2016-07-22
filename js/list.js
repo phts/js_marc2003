@@ -91,9 +91,14 @@ _.mixin({
 		
 		this.metadb_changed = function () {
 			switch (true) {
-			case !panel.metadb:
 			case this.mode == "autoplaylists":
 			case this.mode == "lastfm_info" && this.lastfm_mode > 0:
+				break;
+			case !panel.metadb:
+				this.artist = "";
+				this.data = [];
+				this.items = 0;
+				window.Repaint();
 				break;
 			case this.mode == "properties":
 				this.update();

@@ -49,10 +49,7 @@ _.mixin({
 					this.metadb = fb.GetSelection();
 					break;
 				}
-				if (this.metadb)
-					on_metadb_changed();
-				else
-					window.Repaint();
+				on_metadb_changed();
 			}
 		}
 		
