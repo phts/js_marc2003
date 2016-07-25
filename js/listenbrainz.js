@@ -1,7 +1,9 @@
 _.mixin({
 	listenbrainz : function (x, y, size) {
-		this.playback_new_track = function() {
+		this.playback_new_track = function () {
+			this.metadb = fb.GetNowPlaying();
 			this.time_elapsed = 0;
+			this.timestamp = _.floor(_.now() / 1000);
 			this.target_time = Math.min(_.ceil(fb.PlaybackLength / 2), 240);
 		}
 		
@@ -15,16 +17,10 @@ _.mixin({
 			if (this.token.length != 36)
 				return panel.console("Token not set.");
 			
-			var metadb = fb.GetNowPlaying();
-			if (!metadb)
-				return;
-			
-			if (this.library && !fb.IsMetadbInMediaLibrary(metadb))
+			if (this.library && !fb.IsMetadbInMediaLibrary(this.metadb))
 				return panel.console("Skipping... Track not in Media Library.");
 			
-			var timestamp = _.floor(_.now() / 1000);
-			
-			var tags = this.get_tags(metadb);
+			var tags = this.get_tags(this.metadb);
 			
 			if (!tags.artist || !tags.title)
 				return panel.console("Artist/title tag missing. Not submitting.");
