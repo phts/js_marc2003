@@ -180,7 +180,7 @@ _.mixin({
 				switch (true) {
 				case x > this.x && x < this.x + Math.min(this.data[this.index].width, this.text_width):
 					window.SetCursor(IDC_HAND);
-					_.tt("Run query " + _.q(this.data[this.index].name));
+					_.tt("Autoplaylist: " + this.data[this.index].name);
 					break;
 				case x > this.x + this.w - 20 && x < this.x + this.w:
 					window.SetCursor(IDC_HAND);
@@ -197,7 +197,10 @@ _.mixin({
 				break;
 			case x > this.x + this.text_x && x < this.x + this.text_x + Math.min(this.data[this.index].width, this.text_width):
 				window.SetCursor(IDC_HAND);
-				_.tt(this.data[this.index].url);
+				if (this.data[this.index].url.indexOf("http") == 0)
+					_.tt(this.data[this.index].url);
+				else
+					_.tt("Autoplaylist: " + this.data[this.index].url);
 				break;
 			default:
 				window.SetCursor(IDC_ARROW);
