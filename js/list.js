@@ -197,33 +197,7 @@ _.mixin({
 				break;
 			case x > this.x + this.text_x && x < this.x + this.text_x + Math.min(this.data[this.index].width, this.text_width):
 				window.SetCursor(IDC_HAND);
-				if (this.mode == "properties") {
-					switch (this.data[this.index].name) {
-					case "MUSICBRAINZ_RELEASEGROUPID":
-					case "MUSICBRAINZ RELEASE GROUP ID":
-						_.tt("https://musicbrainz.org/release-group/" + this.data[this.index].value);
-						break;
-					case "MUSICBRAINZ_ARTISTID":
-					case "MUSICBRAINZ_ALBUMARTISTID":
-					case "MUSICBRAINZ ARTIST ID":
-					case "MUSICBRAINZ ALBUM ARTIST ID":
-						_.tt("https://musicbrainz.org/artist/" + this.data[this.index].value);
-						break;
-					case "MUSICBRAINZ_ALBUMID":
-					case "MUSICBRAINZ ALBUM ID":
-						_.tt("https://musicbrainz.org/release/" + this.data[this.index].value);
-						break;
-					case "MUSICBRAINZ_TRACKID":
-					case "MUSICBRAINZ TRACK ID":
-						_.tt("https://musicbrainz.org/recording/" + this.data[this.index].value);
-						break;
-					default:
-						_.tt("Autoplaylist: " + this.data[this.index].query);
-						break;
-					}
-				} else {
-					_.tt(this.data[this.index].url);
-				}
+				_.tt(this.data[this.index].url);
 				break;
 			default:
 				window.SetCursor(IDC_ARROW);
@@ -260,33 +234,11 @@ _.mixin({
 				}
 				break;
 			case x > this.x + this.text_x && x < this.x + this.text_x + Math.min(this.data[this.index].width, this.text_width):
-				if (this.mode == "properties") {
-					switch (this.data[this.index].name) {
-					case "MUSICBRAINZ_RELEASEGROUPID":
-					case "MUSICBRAINZ RELEASE GROUP ID":
-						_.browser("https://musicbrainz.org/release-group/" + this.data[this.index].value);
-						break;
-					case "MUSICBRAINZ_ARTISTID":
-					case "MUSICBRAINZ_ALBUMARTISTID":
-					case "MUSICBRAINZ ARTIST ID":
-					case "MUSICBRAINZ ALBUM ARTIST ID":
-						_.browser("https://musicbrainz.org/artist/" + this.data[this.index].value);
-						break;
-					case "MUSICBRAINZ_ALBUMID":
-					case "MUSICBRAINZ ALBUM ID":
-						_.browser("https://musicbrainz.org/release/" + this.data[this.index].value);
-						break;
-					case "MUSICBRAINZ_TRACKID":
-					case "MUSICBRAINZ TRACK ID":
-						_.browser("https://musicbrainz.org/recording/" + this.data[this.index].value);
-						break;
-					default:
-						plman.CreateAutoPlaylist(plman.PlaylistCount, this.data[this.index].name, this.data[this.index].query);
-						plman.ActivePlaylist = plman.PlaylistCount - 1;
-						break;
-					}
-				} else {
+				if (this.data[this.index].url.indexOf("http") == 0) {
 					_.browser(this.data[this.index].url);
+				} else {
+					plman.CreateAutoPlaylist(plman.PlaylistCount, this.data[this.index].name, this.data[this.index].url);
+					plman.ActivePlaylist = plman.PlaylistCount - 1;
 				}
 				break;
 			}
@@ -1078,10 +1030,33 @@ _.mixin({
 						var num = f.MetaValueCount(i);
 						for (var j = 0; j < num; j++) {
 							var value = f.MetaValue(i, j).replace(/\s{2,}/g, " ");
+							switch (name.toUpperCase()) {
+							case "MUSICBRAINZ_RELEASEGROUPID":
+							case "MUSICBRAINZ RELEASE GROUP ID":
+								var url = "https://musicbrainz.org/release-group/" + value;
+								break;
+							case "MUSICBRAINZ_ARTISTID":
+							case "MUSICBRAINZ_ALBUMARTISTID":
+							case "MUSICBRAINZ ARTIST ID":
+							case "MUSICBRAINZ ALBUM ARTIST ID":
+								var url = "https://musicbrainz.org/artist/" + value;
+								break;
+							case "MUSICBRAINZ_ALBUMID":
+							case "MUSICBRAINZ ALBUM ID":
+								var url = "https://musicbrainz.org/release/" + value;
+								break;
+							case "MUSICBRAINZ_TRACKID":
+							case "MUSICBRAINZ TRACK ID":
+								var url = "https://musicbrainz.org/recording/" + value;
+								break;
+							default:
+								var url = name.toLowerCase() + (num == 1 ? " IS " : " HAS ") + value;
+								break;
+							}
 							this.data.push({
 								name : j == 0 ? name.toUpperCase() : "",
 								value : value,
-								query : name.toLowerCase() + (num == 1 ? " IS " : " HAS ") + value
+								url : url
 							});
 						}
 					}
@@ -1092,12 +1067,12 @@ _.mixin({
 				this.add_location = function () {
 					var names = ["FILE NAME", "FOLDER NAME", "FILE PATH", "SUBSONG INDEX", "FILE SIZE", "LAST MODIFIED"];
 					var values = [panel.tf("%filename_ext%"), panel.tf("$directory_path(%path%)"), this.filename, panel.metadb.Subsong, panel.tf("[%filesize_natural%]"), panel.tf("[%last_modified%]")];
-					var queries = ["%filename_ext% IS ", "\"$directory_path(%path%)\" IS ", "%path% IS ", "%subsong% IS ", "%filesize_natural% IS ", "%last_modified% IS "];
+					var urls = ["%filename_ext% IS ", "\"$directory_path(%path%)\" IS ", "%path% IS ", "%subsong% IS ", "%filesize_natural% IS ", "%last_modified% IS "];
 					for (var i = 0; i < 6; i++) {
 						this.data.push({
 							name : names[i],
 							value : values[i],
-							query : queries[i] + values[i]
+							url : urls[i] + values[i]
 						});
 					}
 					this.add();
@@ -1109,7 +1084,7 @@ _.mixin({
 					this.data.push({
 						name : "DURATION",
 						value : duration + " (" + samples + " samples)",
-						query : "%length% IS " + duration
+						url : "%length% IS " + duration
 					});
 					for (var i = 0; i < f.InfoCount; i++) {
 						var name = f.InfoName(i);
@@ -1117,7 +1092,7 @@ _.mixin({
 						this.data.push({
 							name : name.toUpperCase(),
 							value : value,
-							query : "%__" + name.toLowerCase() + "% IS " + value
+							url : "%__" + name.toLowerCase() + "% IS " + value
 						});
 					}
 					this.add();
@@ -1144,11 +1119,11 @@ _.mixin({
 							return {
 								name : item,
 								value : panel.tf("[%" + item + "%]"),
-								query : "%" + item + "% IS " + panel.tf("[%" + item + "%]")
+								url : "%" + item + "% IS " + panel.tf("[%" + item + "%]")
 							};
 						}));
 					} else {
-						this.data.push({"name" : "", "value" : "", "query" : ""});
+						this.data.push({name : "", value : "", url : ""});
 					}
 				}
 				
