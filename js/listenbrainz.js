@@ -28,7 +28,7 @@ _.mixin({
 			var data = {
 				listen_type : "single",
 				payload : [{
-					listened_at : timestamp,
+					listened_at : this.timestamp,
 					track_metadata : {
 						additional_info : {
 							artist_mbids : _.isString(tags.musicbrainz_artistid) ? [tags.musicbrainz_artistid] : tags.musicbrainz_artistid,
