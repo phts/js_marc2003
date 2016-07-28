@@ -383,10 +383,10 @@ _.mixin({
 	},
 	input : function (prompt, title, value) {
 		var original = value;
-		prompt = prompt.replace(/"/g, '" + Chr(34) + "').replace(/\n/g, '" + Chr(13) + "');
-		title = title.replace(/"/g, '" + Chr(34) + "');
-		value = value.replace(/"/g, '" + Chr(34) + "');
-		var temp_value = vb.eval('InputBox' + '("' + prompt + '", "' + title + '", "' + value + '")');
+		prompt = prompt.replace(/"/g, _.q(" + Chr(34) + ")).replace(/\n/g, _.q(" + Chr(13) + "));
+		title = title.replace(/"/g, _.q(" + Chr(34) + "));
+		value = value.replace(/"/g, _.q(" + Chr(34) + "));
+		var temp_value = vb.eval("InputBox(" + _.q(prompt) + ", " + _.q(title) + ", " + _.q(value) + ")");
 		return _.isUndefined(temp_value) ? original : _.trim(temp_value);
 	},
 	tt : function (value) {

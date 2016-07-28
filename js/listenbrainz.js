@@ -51,7 +51,7 @@ _.mixin({
 				}]
 			};
 			
-			panel.console("Submitting '" + tags.artist + " - " + tags.title + "'");
+			panel.console("Submitting " + _.q(tags.artist + " - " + tags.title));
 			
 			if (this.show_data) {
 				// spam the console!
