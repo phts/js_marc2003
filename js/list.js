@@ -253,7 +253,7 @@ _.mixin({
 			case "autoplaylists":
 				panel.m.AppendMenuItem(this.editing ? MF_GRAYED: MF_STRING, 3000, "Add new autoplaylist...");
 				panel.m.AppendMenuSeparator();
-				if (this.deleted_items.length > 0) {
+				if (this.deleted_items.length) {
 					_(this.deleted_items)
 						.take(8)
 						.forEach(function (item, i) {
@@ -688,7 +688,7 @@ _.mixin({
 				var data = _.jsonParse(this.xmlhttp.responsetext);
 				var max_offset = Math.min(500, data["release-group-count"] || 0) - 100;
 				var rg = data["release-groups"] || [];
-				if (rg.length > 0)
+				if (rg.length)
 					this.mb_data.push.apply(this.mb_data, rg);
 				if (this.mb_offset < max_offset) {
 					this.mb_offset += 100;
@@ -822,7 +822,7 @@ _.mixin({
 					if (new_query == "")
 						return this.editing = false;
 					var new_sort = _.input("Enter sort pattern\n\n(optional)", panel.name, "");
-					var new_forced = (new_sort.length > 0 ? WshShell.popup("Force sort?", 0, panel.name, popup.question + popup.yes_no) : popup.no) == popup.yes;
+					var new_forced = (new_sort.length ? WshShell.popup("Force sort?", 0, panel.name, popup.question + popup.yes_no) : popup.no) == popup.yes;
 					this.data.push({
 						name : new_name,
 						query : new_query,
@@ -868,7 +868,7 @@ _.mixin({
 						if (new_sort == this.data[z].sort)
 							break;
 						this.data[z].sort = new_sort;
-						if (new_sort.length > 0)
+						if (new_sort.length)
 							this.data[z].forced = WshShell.popup("Force sort?", 0, panel.name, popup.question + popup.yes_no) == popup.yes;
 						this.edit_done(z);
 						break;
@@ -1063,7 +1063,7 @@ _.mixin({
 							});
 						}
 					}
-					if (this.data.length > 0) // only add blank line if there is some metadata
+					if (this.data.length) // only add blank line if there is some metadata
 						this.add();
 				}
 				

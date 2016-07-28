@@ -130,7 +130,7 @@ _.mixin({
 			// list 3000-3999
 			// text 5000-5999
 			object && object.rbtn_up(x, y);
-			if (this.list_objects.length + this.text_objects.length > 0) {
+			if (this.list_objects.length || this.text_objects.length) {
 				this.fonts_menu.AppendMenuItem(MF_STRING, 10, 10);
 				this.fonts_menu.AppendMenuItem(MF_STRING, 12, 12);
 				this.fonts_menu.AppendMenuItem(MF_STRING, 14, 14);

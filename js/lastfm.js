@@ -47,7 +47,7 @@ _.mixin({
 		
 		this.update_password = function () {
 			this.password = _.input("Enter your Last.fm password", panel.name, "");
-			if (this.password.length > 0) {
+			if (this.password.length) {
 				this.write_ini("sk", "");
 				window.NotifyOthers("2K3.NOTIFY.LASTFM", "update");
 				this.notify_data("2K3.NOTIFY.LASTFM", "update");

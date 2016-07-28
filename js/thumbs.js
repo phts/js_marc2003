@@ -22,7 +22,7 @@ _.mixin({
 				this.rows = _.ceil(this.h / this.px);
 				this.columns = _.floor(this.w / this.px);
 				this.img_rows = _.ceil(this.images.length / this.columns);
-				if (this.nc && this.images.length > 0) {
+				if (this.nc && this.images.length) {
 					this.nc = false;
 					_.dispose(this.img);
 					this.img = null;
@@ -46,7 +46,7 @@ _.mixin({
 				this.w = this.px;
 				this.h = panel.h;
 				this.rows = _.ceil(this.h / this.px);
-				if (this.nc && this.images.length > 0) {
+				if (this.nc && this.images.length) {
 					this.nc = false;
 					_.dispose(this.img);
 					this.img = null;
@@ -66,7 +66,7 @@ _.mixin({
 				this.w = panel.w;
 				this.h = this.px;
 				this.columns = _.ceil(this.w / this.px);
-				if (this.nc && this.images.length > 0) {
+				if (this.nc && this.images.length) {
 					this.nc = false;
 					_.dispose(this.img);
 					this.img = null;

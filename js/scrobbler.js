@@ -239,7 +239,7 @@ _.mixin({
 					this.pages = data.lovedtracks["@attr"].totalPages;
 				}
 				data = _.get(data, "lovedtracks.track", []);
-				if (data.length > 0) {
+				if (data.length) {
 					_.forEach(data, function (item) {
 						var artist = item.artist.name;
 						var title = item.name;
@@ -273,7 +273,7 @@ _.mixin({
 					this.pages = data.toptracks["@attr"].totalPages;
 				}
 				data = _.get(data, "toptracks.track", []);
-				if (data.length > 0) {
+				if (data.length) {
 					_.forEach(data, function (item) {
 						var playcount = item.playcount;
 						if (playcount > 0) {
@@ -386,7 +386,7 @@ _.mixin({
 			m.AppendMenuSeparator();
 			m.AppendMenuItem(MF_STRING, 5, "Show loved tracks");
 			m.AppendMenuSeparator();
-			m.AppendMenuItem(lastfm.username.length > 0 ? MF_STRING : MF_GRAYED, 6, "View profile");
+			m.AppendMenuItem(lastfm.username.length ? MF_STRING : MF_GRAYED, 6, "View profile");
 			var idx = m.TrackPopupMenu(this.x, this.y + this.size);
 			switch (idx) {
 			case 1:

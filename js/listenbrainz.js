@@ -123,7 +123,7 @@ _.mixin({
 			m.AppendMenuItem(MF_STRING, 1, "Set token...");
 			m.AppendMenuSeparator();
 			m.AppendMenuItem(MF_STRING, 2, "Set username...");
-			m.AppendMenuItem(this.username.length > 0 ? MF_STRING : MF_GRAYED, 3, "View profile");
+			m.AppendMenuItem(this.username.length ? MF_STRING : MF_GRAYED, 3, "View profile");
 			m.AppendMenuSeparator();
 			m.AppendMenuItem(flag, 4, "Show submission data in Console when sending");
 			m.CheckMenuItem(4, this.show_data);

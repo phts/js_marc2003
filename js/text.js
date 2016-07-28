@@ -304,7 +304,7 @@ _.mixin({
 						.map("innerText")
 						.stripTags()
 						.value();
-					panel.console(content.length > 0 ? "A review was found and saved." : "No review was found on the page for this album.");
+					panel.console(content.length ? "A review was found and saved." : "No review was found on the page for this album.");
 					_.save(JSON.stringify([content]), f);
 					this.artist = "";
 					panel.item_focus_change();
@@ -317,7 +317,7 @@ _.mixin({
 								var divs = item.getElementsByTagName("div");
 								var album = divs[2].getElementsByTagName("a")[0].innerText;
 								var temp = divs[3].getElementsByTagName("a");
-								if (temp.length > 0)
+								if (temp.length)
 									var artist = temp[0].innerText;
 								else
 									var artist = "various artists";
@@ -327,7 +327,7 @@ _.mixin({
 								}
 							}, this)
 							.value();
-						if (this.allmusic_url.length > 0) {
+						if (this.allmusic_url.length) {
 							panel.console("A page was found for " + _.q(this.album) + ". Now checking for review...");
 							this.get();
 						} else {
