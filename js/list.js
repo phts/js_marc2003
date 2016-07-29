@@ -709,9 +709,6 @@ _.mixin({
 					var data = _.jsonParse(this.xmlhttp.responsetext);
 					if (data.error)
 						return panel.console(data.message);
-					var temp = _.get(data, this.lastfm_artist_methods[this.lastfm_artist_method].json, []);
-					if (temp.length == 0)
-						return;
 					_.save(JSON.stringify(data), f, -1);
 					this.reset();
 					break;
