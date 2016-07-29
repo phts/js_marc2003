@@ -418,12 +418,12 @@ _.mixin({
 				return;
 			if (this.page != this.last_page)
 				return this.last_page = this.page;
-			var temp = this.page > 1 ? this.page - 1 : 1;
+			var tmp = this.page > 1 ? this.page - 1 : 1;
 			this.xmlhttp.abort();
 			if (this.loved_working)
-				this.get("user.getLovedTracks", null, temp);
+				this.get("user.getLovedTracks", null, tmp);
 			else if (this.playcount_working)
-				this.get("user.getTopTracks", null, temp);
+				this.get("user.getTopTracks", null, tmp);
 		}, this);
 		
 		lastfm.scrobbler = this;

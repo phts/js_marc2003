@@ -245,9 +245,9 @@ _.mixin({
 			case this.modes[this.mode] == "grid":
 				if (this.overlay)
 					return window.SetCursor(this.close_btn.move(x, y) ? IDC_HAND : IDC_ARROW);
-				var temp = _.floor(x / this.px);
-				if (temp < this.columns)
-					this.index = temp + ((_.floor(y / this.px) + this.offset) * this.columns);
+				var tmp = _.floor(x / this.px);
+				if (tmp < this.columns)
+					this.index = tmp + ((_.floor(y / this.px) + this.offset) * this.columns);
 				break;
 			case this.modes[this.mode] == "left":
 			case this.modes[this.mode] == "right":

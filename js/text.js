@@ -316,9 +316,9 @@ _.mixin({
 							.forEach(function (item) {
 								var divs = item.getElementsByTagName("div");
 								var album = divs[2].getElementsByTagName("a")[0].innerText;
-								var temp = divs[3].getElementsByTagName("a");
-								if (temp.length)
-									var artist = temp[0].innerText;
+								var tmp = divs[3].getElementsByTagName("a");
+								if (tmp.length)
+									var artist = tmp[0].innerText;
 								else
 									var artist = "various artists";
 								if (this.is_match(artist, album)) {
