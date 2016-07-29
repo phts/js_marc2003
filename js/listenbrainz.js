@@ -155,8 +155,6 @@ _.mixin({
 			window.RepaintRect(this.x, this.y, this.size, this.size);
 		}
 		
-		this.folder = fb.ProfilePath + "listenbrainz\\";
-		_.createFolder(this.folder);
 		_.createFolder(folders.settings);
 		this.x = x;
 		this.y = y;
@@ -165,7 +163,6 @@ _.mixin({
 		this.token = utils.ReadINI(this.ini_file, "Listenbrainz", "token");
 		this.username = utils.ReadINI(this.ini_file, "Listenbrainz", "username");
 		this.show_data = window.GetProperty("2K3.LISTENBRAINZ.SHOW.DATA", false);
-		this.log_data = window.GetProperty("2K3.LISTENBRAINZ.LOG.DATA", false);
 		this.library = window.GetProperty("2K3.LISTENBRAINZ.LIBRARY", false);
 		this.submit_genres = window.GetProperty("2K3.LISTENBRAINZ.SUBMIT.GENRES", true);
 		this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
