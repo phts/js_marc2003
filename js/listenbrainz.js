@@ -53,10 +53,8 @@ _.mixin({
 			
 			panel.console("Submitting " + _.q(tags.artist + " - " + tags.title));
 			
-			if (this.show_data) {
-				// spam the console!
+			if (this.show_data)
 				fb.trace(JSON.stringify(data, null, "    "));
-			}
 			
 			this.post(data);
 		}
