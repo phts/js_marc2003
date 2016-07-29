@@ -58,24 +58,7 @@ _.mixin({
 				fb.trace(JSON.stringify(data, null, "    "));
 			}
 			
-			if (this.log_data)
-				this.log(data);
-			
 			this.post(data);
-		}
-		
-		this.log = function (data) {
-			var d = new Date();
-			var f = this.folder + _.padLeft(d.getMonth() + 1, 2, 0) + "." + d.getFullYear() + ".json";
-			if (_.isFile(f)) {
-				var json = _.jsonParse(_.open(f));
-				if (json.payload)
-					json = json.payload;
-			} else {
-				var json = [];
-			}
-			json.unshift(data.payload[0]);
-			_.save(JSON.stringify(json), f);
 		}
 		
 		this.post = function (data) {
@@ -127,12 +110,10 @@ _.mixin({
 			m.AppendMenuSeparator();
 			m.AppendMenuItem(flag, 4, "Show submission data in Console when sending");
 			m.CheckMenuItem(4, this.show_data);
-			m.AppendMenuItem(flag, 5, "Save submission data to external file");
-			m.CheckMenuItem(5, this.log_data);
-			m.AppendMenuItem(flag, 6, "Submit Media Library tracks only");
-			m.CheckMenuItem(6, this.library);
-			m.AppendMenuItem(flag, 7, "Submit genre tags");
-			m.CheckMenuItem(7, this.submit_genres);
+			m.AppendMenuItem(flag, 5, "Submit Media Library tracks only");
+			m.CheckMenuItem(5, this.library);
+			m.AppendMenuItem(flag, 6, "Submit genre tags");
+			m.CheckMenuItem(6, this.submit_genres);
 			var idx = m.TrackPopupMenu(this.x, this.y + this.size);
 			switch (idx) {
 			case 1:
@@ -158,14 +139,10 @@ _.mixin({
 				window.SetProperty("2K3.LISTENBRAINZ.SHOW.DATA", this.show_data);
 				break;
 			case 5:
-				this.log_data = !this.log_data;
-				window.SetProperty("2K3.LISTENBRAINZ.LOG.DATA", this.log_data);
-				break;
-			case 6:
 				this.library = !this.library;
 				window.SetProperty("2K3.LISTENBRAINZ.LIBRARY", this.library);
 				break;
-			case 7:
+			case 6:
 				this.submit_genres = !this.submit_genres;
 				window.SetProperty("2K3.LISTENBRAINZ.SUBMIT.GENRES", this.submit_genres);
 				break;
