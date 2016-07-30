@@ -80,10 +80,7 @@ _.mixin({
 				if (name == "genre" && !this.submit_genres)
 					continue;
 				
-				if (_.isString(this.mb_names[name]))
-					var key = this.mb_names[name];
-				else
-					var key = name;
+				var key = _.isString(this.mb_names[name]) ? this.mb_names[name] : name;
 				
 				var num = f.MetaValueCount(i);
 				if (num == 1) {

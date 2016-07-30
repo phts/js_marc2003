@@ -802,10 +802,7 @@ _.mixin({
 				}
 				
 				this.replacer = function (key, value) {
-					if (key == "width")
-						return undefined;
-					else
-						return value;
+					return key == "width" ? undefined : value;
 				}
 				
 				this.add = function () {

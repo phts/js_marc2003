@@ -317,10 +317,7 @@ _.mixin({
 								var divs = item.getElementsByTagName("div");
 								var album = divs[2].getElementsByTagName("a")[0].innerText;
 								var tmp = divs[3].getElementsByTagName("a");
-								if (tmp.length)
-									var artist = tmp[0].innerText;
-								else
-									var artist = "various artists";
+								var artist = tmp.length ? tmp[0].innerText : "various artists";
 								if (this.is_match(artist, album)) {
 									this.allmusic_url = divs[2].getElementsByTagName("a")[0].href;
 									return false;
