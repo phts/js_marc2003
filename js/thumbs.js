@@ -84,7 +84,7 @@ _.mixin({
 		
 		this.paint = function (gr) {
 			switch (true) {
-			case this.images.length == 0:
+			case !this.images.length:
 				this.image_xywh = [];
 				break;
 			case this.modes[this.mode] == "off":
@@ -153,7 +153,7 @@ _.mixin({
 				this.artist = temp_artist;
 				this.folder = panel.new_artist_folder(this.artist);
 				var np = fb.GetNowPlaying();
-				if (np && this.auto_download && np.Compare(panel.metadb) && _.tagged(this.artist) && _.getFiles(this.folder, this.exts).length == 0) {
+				if (np && this.auto_download && np.Compare(panel.metadb) && _.tagged(this.artist) && !_.getFiles(this.folder, this.exts).length) {
 					var a = _.q(_.fbSanitise(this.artist));
 					var n = _.round(_.now() / 1000);
 					var t = utils.ReadINI(this.ini_file, "Timestamps", a, 0);
@@ -179,7 +179,7 @@ _.mixin({
 		
 		this.image_xywh_trace = function (x, y) {
 			switch (true) {
-			case this.images.length == 0:
+			case !this.images.length:
 			case this.modes[this.mode] == "grid" && !this.overlay:
 			case this.modes[this.mode] != "grid" && this.trace(x, y):
 				return false;
@@ -310,7 +310,7 @@ _.mixin({
 				break;
 			}
 			panel.m.AppendMenuSeparator();
-			if (panel.text_objects.length == 0 && panel.list_objects.length == 0) {
+			if (!panel.text_objects.length && !panel.list_objects.length) {
 				_.forEach(this.modes, function (item, i) {
 					panel.s11.AppendMenuItem(MF_STRING, i + 4050, _.capitalize(item));
 				});
@@ -433,10 +433,10 @@ _.mixin({
 					this.update();
 				break;
 			case 4510:
-				if (this.images.length == 0)
-					_.run(this.folder);
-				else
+				if (this.files.length)
 					_.explorer(this.files[this.image]);
+				else
+					_.run(this.folder);
 				break;
 			case 4511:
 				_.run(this.files[this.image]);
