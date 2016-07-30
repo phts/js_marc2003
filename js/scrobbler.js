@@ -300,7 +300,9 @@ _.mixin({
 						panel.console("Nothing found to import.");
 					} else {
 						this.sql += "COMMIT;";
-						_.save(this.sql, this.sql_file);
+						var ts = fso.OpenTextFile(this.sql_file, 2, true, 0);
+						ts.WriteLine(this.sql);
+						ts.Close();
 						this.finish_import();
 					}
 				}

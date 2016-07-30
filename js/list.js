@@ -709,7 +709,7 @@ _.mixin({
 					var data = _.jsonParse(this.xmlhttp.responsetext);
 					if (data.error)
 						return panel.console(data.message);
-					_.save(JSON.stringify(data), f, -1);
+					_.save(JSON.stringify(data), f);
 					this.reset();
 					break;
 				case 1: // user charts
@@ -751,14 +751,14 @@ _.mixin({
 					} else {
 						var tmp = [];
 					}
-					_.save(JSON.stringify(tmp), f, -1);
+					_.save(JSON.stringify(tmp), f);
 					this.update();
 					break;
 				case 2: // recent tracks
 					var data = _.jsonParse(this.xmlhttp.responsetext);
 					if (data.error)
 						return panel.console(data.message);
-					_.save(JSON.stringify(data), f, -1);
+					_.save(JSON.stringify(data), f);
 					this.update();
 					break;
 				}

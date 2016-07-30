@@ -337,9 +337,9 @@ _.mixin({
 	open : function (file) {
 		return utils.ReadTextFile(file);
 	},
-	save : function (value, file, format) {
+	save : function (value, file) {
 		try {
-			var ts = fso.OpenTextFile(file, 2, true, format || 0);
+			var ts = fso.OpenTextFile(file, 2, true, -1);
 			ts.WriteLine(value);
 			ts.Close();
 			return true;
