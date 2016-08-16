@@ -7,13 +7,13 @@
 // @import "%fb2k_profile_path%js_marc2003\js\list.js"
 // ==/PREPROCESSOR==
 
-//this script requires musicbrainz artist id tags in your files
-//https://musicbrainz.org/doc/MusicBrainz_Identifier
-//these tags can be populated with musicbrainz picard or foo_musicbrainz
+// this script requires musicbrainz artist id tags in your files
+// https://musicbrainz.org/doc/MusicBrainz_Identifier
+// these tags can be populated with musicbrainz picard or foo_musicbrainz
 
 var panel = new _.panel("Small Web Links", ["metadb", "custom_background"]);
-window.SetProperty("2K3.LIST.MUSICBRAINZ.MODE", 1);
 var list = new _.list("musicbrainz", 5, 2, 0, 0);
+list.mb_mode = 1;
 
 panel.item_focus_change();
 

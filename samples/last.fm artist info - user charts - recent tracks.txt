@@ -10,7 +10,7 @@
 
 var panel = new _.panel("Last.fm Artist Info/User Charts/Recent Tracks", ["metadb", "remap"]);
 var lastfm = new _.lastfm();
-//lastfm.api_key = "abc123"; //uncomment this and edit accordingly.
+//lastfm.api_key = "abc123"; // uncomment this and edit accordingly.
 var list = new _.list("lastfm_info", 10, 24, 0, 0);
 
 panel.item_focus_change();

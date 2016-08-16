@@ -34,7 +34,7 @@ function on_size() {
 }
 
 function on_paint(gr) {
-	panel.colours.text = _.RGB(230, 230, 230); //hack because of dark overlay
+	panel.colours.text = _.RGB(230, 230, 230);
 	panel.colours.highlight = _.RGB(200, 200, 200);
 	panel.paint(gr);
 	albumart.paint(gr);

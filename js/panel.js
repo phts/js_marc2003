@@ -40,7 +40,7 @@ _.mixin({
 			if (this.metadb_func) {
 				switch (this.selection) {
 				case 0:
-					this.metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem()
+					this.metadb = fb.IsPlaying ? fb.GetNowPlaying() : fb.GetFocusItem();
 					break;
 				case 1:
 					this.metadb = fb.GetFocusItem();
@@ -49,10 +49,9 @@ _.mixin({
 					this.metadb = fb.GetSelection();
 					break;
 				}
-				if (this.metadb)
-					on_metadb_changed();
-				else
-					window.Repaint();
+				on_metadb_changed();
+				if (!this.metadb)
+					_.tt("");
 			}
 		}
 		
@@ -78,6 +77,9 @@ _.mixin({
 				this.fonts.name = "Segoe UI";
 				this.console("Unable to use default font. Using " + this.fonts.name + " instead.");
 			}
+			_.dispose(this.fonts.title);
+			_.dispose(this.fonts.normal);
+			_.dispose(this.fonts.fixed);
 			this.fonts.title = _.gdiFont(this.fonts.name, 12, 1);
 			this.fonts.normal = _.gdiFont(this.fonts.name, this.fonts.size);
 			this.fonts.fixed = _.gdiFont("Lucida Console", this.fonts.size);
@@ -115,8 +117,6 @@ _.mixin({
 		}
 		
 		this.rbtn_up = function (x, y, object) {
-			if (utils.IsKeyPressed(VK_SHIFT))
-				return false;
 			this.m = window.CreatePopupMenu();
 			this.fonts_menu = window.CreatePopupMenu();
 			this.background_menu = window.CreatePopupMenu();
@@ -125,12 +125,12 @@ _.mixin({
 			this.s11 = window.CreatePopupMenu();
 			this.s12 = window.CreatePopupMenu();
 			this.s13 = window.CreatePopupMenu();
-			//panel 1-999
-			//album art 2000-2999
-			//list 3000-3999
-			//text 5000-5999
+			// panel 1-999
+			// album art 2000-2999
+			// list 3000-3999
+			// text 5000-5999
 			object && object.rbtn_up(x, y);
-			if (this.list_objects.length + this.text_objects.length > 0) {
+			if (this.list_objects.length || this.text_objects.length) {
 				this.fonts_menu.AppendMenuItem(MF_STRING, 10, 10);
 				this.fonts_menu.AppendMenuItem(MF_STRING, 12, 12);
 				this.fonts_menu.AppendMenuItem(MF_STRING, 14, 14);
@@ -254,13 +254,13 @@ _.mixin({
 		this.selection = this.check_feature("metadb") ? window.GetProperty("2K3.PANEL.SELECTION", 0) : 0;
 		this.artist_tf = this.check_feature("remap") ? window.GetProperty("2K3.PANEL.ARTIST.TF", DEFAULT_ARTIST) : DEFAULT_ARTIST;
 		if (this.check_feature("custom_background")) {
-			this.colours.mode = window.GetProperty("2K3.PANEL.COLOURS.MODE", 1);
+			this.colours.mode = window.GetProperty("2K3.PANEL.COLOURS.MODE", 0);
 			this.colours.custom = window.GetProperty("2K3.PANEL.COLOURS.CUSTOM", "0-0-0");
 		}
 		this.colours_changed();
 		this.font_changed();
-		this.list_objects = []; //these will be populated automatically
-		this.text_objects = []; //and used inside font_changed
+		this.list_objects = []; // these will be populated automatically
+		this.text_objects = []; // and used inside font_changed
 		window.DlgCode = DLGC_WANTALLKEYS;
 	}
 });

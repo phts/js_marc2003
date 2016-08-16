@@ -7,13 +7,12 @@ _.mixin({
 			switch (true) {
 			case panel.w < this.px || panel.h < this.px || this.modes[this.mode] == "off":
 				this.nc = true;
-				this.img && this.img.Dispose();
+				_.dispose(this.img);
 				this.img = null;
 				this.w = 0;
 				this.h = 0;
 				break;
 			case this.modes[this.mode] == "grid":
-				this.overlay = false; //don't use enable_overlay because it uses window.Repaint which we shouldn't do from on_size
 				this.x = 0;
 				this.y = 0;
 				this.w = panel.w;
@@ -23,9 +22,9 @@ _.mixin({
 				this.rows = _.ceil(this.h / this.px);
 				this.columns = _.floor(this.w / this.px);
 				this.img_rows = _.ceil(this.images.length / this.columns);
-				if (this.nc && this.images.length > 0) {
+				if (this.nc && this.images.length) {
 					this.nc = false;
-					this.img && this.img.Dispose();
+					_.dispose(this.img);
 					this.img = null;
 					this.img = gdi.CreateImage(Math.min(this.columns, this.images.length) * this.px, this.img_rows * this.px);
 					var temp_gr = this.img.GetGraphics();
@@ -47,9 +46,9 @@ _.mixin({
 				this.w = this.px;
 				this.h = panel.h;
 				this.rows = _.ceil(this.h / this.px);
-				if (this.nc && this.images.length > 0) {
+				if (this.nc && this.images.length) {
 					this.nc = false;
-					this.img && this.img.Dispose();
+					_.dispose(this.img);
 					this.img = null;
 					this.img = gdi.CreateImage(this.px, this.px * this.images.length);
 					var temp_gr = this.img.GetGraphics();
@@ -67,9 +66,9 @@ _.mixin({
 				this.w = panel.w;
 				this.h = this.px;
 				this.columns = _.ceil(this.w / this.px);
-				if (this.nc && this.images.length > 0) {
+				if (this.nc && this.images.length) {
 					this.nc = false;
-					this.img && this.img.Dispose();
+					_.dispose(this.img);
 					this.img = null;
 					this.img = gdi.CreateImage(this.px * this.images.length, this.px);
 					var temp_gr = this.img.GetGraphics();
@@ -85,7 +84,7 @@ _.mixin({
 		
 		this.paint = function (gr) {
 			switch (true) {
-			case this.images.length == 0:
+			case !this.images.length:
 				this.image_xywh = [];
 				break;
 			case this.modes[this.mode] == "off":
@@ -142,24 +141,36 @@ _.mixin({
 		}
 		
 		this.metadb_changed = function () {
-			if (panel.metadb) {
-				switch (this.source) {
-				case 0: //last.fm
-					var temp_artist = panel.tf(panel.artist_tf);
-					if (this.artist == temp_artist)
-						return;
-					this.artist = temp_artist;
-					this.folder = panel.new_artist_folder(this.artist);
-					break;
-				case 1: //custom folder
-					var temp_folder = panel.tf(this.custom_folder_tf.replace("%profile%", fb.ProfilePath));
-					if (this.folder == temp_folder)
-						return;
-					this.folder = temp_folder;
-					break;
+			switch (true) {
+			case !panel.metadb:
+				this.artist = "";
+				this.folder = "";
+				break;
+			case this.source == 0: // last.fm
+				var temp_artist = panel.tf(panel.artist_tf);
+				if (this.artist == temp_artist)
+					return;
+				this.artist = temp_artist;
+				this.folder = panel.new_artist_folder(this.artist);
+				var np = fb.GetNowPlaying();
+				if (np && this.auto_download && np.Compare(panel.metadb) && _.tagged(this.artist) && !_.getFiles(this.folder, this.exts).length) {
+					var a = _.q(_.fbSanitise(this.artist));
+					var n = _.round(_.now() / 1000);
+					var t = utils.ReadINI(this.ini_file, "Timestamps", a, 0);
+					if (n - t > ONE_DAY) {
+						utils.WriteINI(this.ini_file, "Timestamps", a, n);
+						this.download();
+					}
 				}
-				this.update();
+				break;
+			case this.source == 1: // custom folder
+				var temp_folder = panel.tf(this.custom_folder_tf.replace("%profile%", fb.ProfilePath));
+				if (this.folder == temp_folder)
+					return;
+				this.folder = temp_folder;
+				break;
 			}
+			this.update();
 		}
 		
 		this.trace = function (x, y) {
@@ -168,7 +179,7 @@ _.mixin({
 		
 		this.image_xywh_trace = function (x, y) {
 			switch (true) {
-			case this.images.length == 0:
+			case !this.images.length:
 			case this.modes[this.mode] == "grid" && !this.overlay:
 			case this.modes[this.mode] != "grid" && this.trace(x, y):
 				return false;
@@ -230,13 +241,13 @@ _.mixin({
 			this.index = this.images.length;
 			switch (true) {
 			case !this.trace(x, y):
-				window.SetCursor(IDC_ARROW);
-				return;
+				break;
 			case this.modes[this.mode] == "grid":
 				if (this.overlay)
 					return window.SetCursor(this.close_btn.move(x, y) ? IDC_HAND : IDC_ARROW);
-				var temp = _.floor(x / this.px);
-				this.index = temp < this.columns ? temp + ((_.floor(y / this.px) + this.offset) * this.columns) : this.images.length;
+				var tmp = _.floor(x / this.px);
+				if (tmp < this.columns)
+					this.index = tmp + ((_.floor(y / this.px) + this.offset) * this.columns);
 				break;
 			case this.modes[this.mode] == "left":
 			case this.modes[this.mode] == "right":
@@ -278,33 +289,41 @@ _.mixin({
 			panel.m.AppendMenuItem(MF_STRING, 4001, "Custom folder");
 			panel.m.CheckMenuRadioItem(4000, 4001, this.source + 4000);
 			panel.m.AppendMenuSeparator();
-			if (this.source == 0) { //last.fm
-				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4010, "Download artist art from Last.fm");
-				panel.m.AppendMenuSeparator();
-				panel.s10.AppendMenuItem(MF_STRING, 4011, "1");
-				panel.s10.AppendMenuItem(MF_STRING, 4013, "3");
-				panel.s10.AppendMenuItem(MF_STRING, 4016, "6");
-				panel.s10.AppendMenuItem(MF_STRING, 4019, "9");
-				panel.s10.CheckMenuRadioItem(4011, 4019, this.download_limit + 4010);
-				panel.s10.AppendTo(panel.m, MF_STRING, "Limit");
-			} else { //custom folder
-				panel.m.AppendMenuItem(MF_STRING, 4040, "Set custom folder...");
-				panel.m.AppendMenuSeparator();
-				panel.m.AppendMenuItem(MF_STRING, 4041, "Refresh");
+			switch (this.source) {
+			case 0: // last.fm
+				panel.m.AppendMenuItem(panel.metadb ? MF_STRING : MF_GRAYED, 4002, "Download now");
+				panel.s10.AppendMenuItem(MF_GRAYED, 4003, "Automatic download");
+				panel.s10.AppendMenuItem(MF_STRING, 4004, "On");
+				panel.s10.AppendMenuItem(MF_STRING, 4005, "Off");
+				panel.s10.CheckMenuRadioItem(4004, 4005, this.auto_download ? 4004 : 4005);
+				panel.s10.AppendMenuSeparator();
+				panel.s10.AppendMenuItem(MF_GRAYED, 4009, "Limit");
+				_.forEach(this.download_limits, function (item) {
+					panel.s10.AppendMenuItem(MF_STRING, item + 4010, item);
+				});
+				panel.s10.CheckMenuRadioItem(_.first(this.download_limits) + 4010, _.last(this.download_limits) + 4010, this.download_limit + 4010);
+				panel.s10.AppendTo(panel.m, MF_STRING, "Server options");
+				break;
+			case 1: // custom folder
+				panel.m.AppendMenuItem(MF_STRING, 4040, "Refresh");
+				panel.m.AppendMenuItem(MF_STRING, 4041, "Set custom folder...");
+				break;
 			}
 			panel.m.AppendMenuSeparator();
-			_.forEach(this.modes, function (item, i) {
-				panel.s11.AppendMenuItem(MF_STRING, i + 4050, _.capitalize(item));
-			});
-			panel.s11.CheckMenuRadioItem(4050, 4055, this.mode + 4050);
-			panel.s11.AppendMenuSeparator();
-			var flag = this.modes[this.mode] == "off" ? MF_GRAYED : MF_STRING;
-			_.forEach(this.pxs, function (item) {
-				panel.s11.AppendMenuItem(flag, item + 4100, item + "px");
-			});
-			panel.s11.CheckMenuRadioItem(4175, 4400, this.px + 4100);
-			panel.s11.AppendTo(panel.m, MF_STRING, "Thumbs");
-			panel.m.AppendMenuSeparator();
+			if (!panel.text_objects.length && !panel.list_objects.length) {
+				_.forEach(this.modes, function (item, i) {
+					panel.s11.AppendMenuItem(MF_STRING, i + 4050, _.capitalize(item));
+				});
+				panel.s11.CheckMenuRadioItem(4050, 4055, this.mode + 4050);
+				panel.s11.AppendMenuSeparator();
+				var flag = this.modes[this.mode] == "off" ? MF_GRAYED : MF_STRING;
+				_.forEach(this.pxs, function (item) {
+					panel.s11.AppendMenuItem(flag, item + 4100, item + "px");
+				});
+				panel.s11.CheckMenuRadioItem(_.first(this.pxs) + 4100, _.last(this.pxs) + 4100, this.px + 4100);
+				panel.s11.AppendTo(panel.m, MF_STRING, "Thumbs");
+				panel.m.AppendMenuSeparator();
+			}
 			panel.s12.AppendMenuItem(MF_STRING, 4060, "Off");
 			panel.s12.AppendMenuItem(MF_STRING, 4065, "5 seconds");
 			panel.s12.AppendMenuItem(MF_STRING, 4070, "10 seconds");
@@ -349,26 +368,33 @@ _.mixin({
 				this.folder = "";
 				panel.item_focus_change();
 				break;
-			case 4010:
+			case 4002:
 				this.download();
+				break;
+			case 4004:
+			case 4005:
+				this.auto_download = idx == 4004;
+				window.SetProperty("2K3.THUMBS.AUTO.DOWNLOAD", this.auto_download);
 				break;
 			case 4011:
 			case 4013:
-			case 4016:
-			case 4019:
+			case 4015:
+			case 4020:
+			case 4025:
+			case 4030:
 				this.download_limit = idx - 4010;
-				window.SetProperty("2K3.THUMBS.DOWNLOAD.LIMIT", this.download_limit);
+				window.SetProperty("2K3.THUMBS.NEW.DOWNLOAD.LIMIT", this.download_limit);
 				break;
 			case 4040:
+				this.update();
+				break;
+			case 4041:
 				this.custom_folder_tf = _.input("Enter title formatting or an absolute path to a folder.\n\n%profile% will resolve to your foobar2000 profile folder or the program folder if using portable mode.", panel.name, this.custom_folder_tf);
 				if (this.custom_folder_tf == "")
 					this.custom_folder_tf = "$directory_path(%path%)";
 				window.SetProperty("2K3.THUMBS.CUSTOM.FOLDER.TF", this.custom_folder_tf);
 				this.folder = "";
 				panel.item_focus_change();
-				break;
-			case 4041:
-				this.update();
 				break;
 			case 4050:
 			case 4051:
@@ -407,10 +433,10 @@ _.mixin({
 					this.update();
 				break;
 			case 4510:
-				if (this.images.length == 0)
-					_.run(this.folder);
-				else
+				if (this.files.length)
 					_.explorer(this.files[this.image]);
+				else
+					_.run(this.folder);
 				break;
 			case 4511:
 				_.run(this.files[this.image]);
@@ -454,17 +480,13 @@ _.mixin({
 		
 		this.update = function () {
 			this.image = 0;
-			_.forEach(this.images, function (item) {
-				try {
-					item.Dispose();
-				} catch (e) {
-				}
-			});
+			_.map(this.images, _.dispose);
 			this.files = _.getFiles(this.folder, this.exts, this.sort == 0);
 			if (this.source == 0 && this.files.length > 1) {
 				this.default_file = this.folder + utils.ReadINI(this.ini_file, "Defaults", _.q(_.fbSanitise(this.artist)));
-				if (_.includes(this.files, this.default_file)) {
-					this.files.splice(_.indexOf(this.files, this.default_file), 1);
+				var tmp = _.indexOf(this.files, this.default_file);
+				if (tmp > -1) {
+					this.files.splice(tmp, 1);
 					this.files.unshift(this.default_file);
 				}
 			}
@@ -507,12 +529,10 @@ _.mixin({
 		
 		this.success = function (base) {
 			_(_.getElementsByTagName(this.xmlhttp.responsetext, "img"))
-				.filter(function (item) {
-					return item.src.indexOf("http://img2-ak.lst.fm/i/u/avatar170s") == 0;
-				})
+				.filter({"className" : "image-list-image"})
 				.take(this.download_limit)
 				.forEach(function (item) {
-					var url = item.src.replace("avatar170s", "ar0");
+					var url = item.src.replace("avatar170s/", "");
 					var filename = base + url.substring(url.lastIndexOf("/") + 1) + ".jpg";
 					_.runCmd("cscript //nologo " + _.q(folders.home + "download.vbs") + " " + _.q(url) + " " + _.q(filename), false);
 				})
@@ -540,14 +560,16 @@ _.mixin({
 		this.images = [];
 		this.modes = ["grid", "left", "right", "top", "bottom", "off"];
 		this.pxs = [75, 100, 150, 200, 250, 300];
-		this.mode = window.GetProperty("2K3.THUMBS.MODE", 4); //bottom
+		this.download_limits = [1, 3, 5, 10, 15, 20];
+		this.mode = window.GetProperty("2K3.THUMBS.MODE", 4); // bottom
 		this.cycle = window.GetProperty("2K3.THUMBS.CYCLE", 0);
 		this.aspect = window.GetProperty("2K3.THUMBS.ASPECT", image.crop_top);
 		this.custom_folder_tf = window.GetProperty("2K3.THUMBS.CUSTOM.FOLDER.TF", "$directory_path(%path%)");
 		this.px = window.GetProperty("2K3.THUMBS.PX", 75);
-		this.sort = window.GetProperty("2k3.THUMBS.SORT", 0); //0 newest first 1 a-z
-		this.source = window.GetProperty("2K3.THUMBS.SOURCE", 0); //0 last.fm 1 custom folder
-		this.download_limit = window.GetProperty("2K3.THUMBS.DOWNLOAD.LIMIT", 9);
+		this.sort = window.GetProperty("2K3.THUMBS.SORT", 0); // 0 newest first 1 a-z
+		this.source = window.GetProperty("2K3.THUMBS.SOURCE", 0); // 0 last.fm 1 custom folder
+		this.download_limit = window.GetProperty("2K3.THUMBS.NEW.DOWNLOAD.LIMIT", 10);
+		this.auto_download = window.GetProperty("2K3.THUMBS.AUTO.DOWNLOAD", false);
 		this.ini_file = folders.settings + "thumbs.ini";
 		this.exts = "jpg|jpeg|png|gif";
 		this.folder = "";

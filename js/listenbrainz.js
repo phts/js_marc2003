@@ -1,7 +1,9 @@
 _.mixin({
 	listenbrainz : function (x, y, size) {
-		this.playback_new_track = function() {
+		this.playback_new_track = function () {
+			this.metadb = fb.GetNowPlaying();
 			this.time_elapsed = 0;
+			this.timestamp = _.floor(_.now() / 1000);
 			this.target_time = Math.min(_.ceil(fb.PlaybackLength / 2), 240);
 		}
 		
@@ -15,16 +17,10 @@ _.mixin({
 			if (this.token.length != 36)
 				return panel.console("Token not set.");
 			
-			var metadb = fb.GetNowPlaying();
-			if (!metadb)
-				return;
-			
-			if (this.library && !fb.IsMetadbInMediaLibrary(metadb))
+			if (this.library && !fb.IsMetadbInMediaLibrary(this.metadb))
 				return panel.console("Skipping... Track not in Media Library.");
 			
-			var timestamp = _.floor(_.now() / 1000);
-			
-			var tags = this.get_tags(metadb);
+			var tags = this.get_tags(this.metadb);
 			
 			if (!tags.artist || !tags.title)
 				return panel.console("Artist/title tag missing. Not submitting.");
@@ -32,7 +28,7 @@ _.mixin({
 			var data = {
 				listen_type : "single",
 				payload : [{
-					listened_at : timestamp,
+					listened_at : this.timestamp,
 					track_metadata : {
 						additional_info : {
 							artist_mbids : _.isString(tags.musicbrainz_artistid) ? [tags.musicbrainz_artistid] : tags.musicbrainz_artistid,
@@ -55,31 +51,12 @@ _.mixin({
 				}]
 			};
 			
-			panel.console("Submitting '" + tags.artist + " - " + tags.title + "'");
+			panel.console("Submitting " + _.q(tags.artist + " - " + tags.title));
 			
-			if (this.show_data) {
-				//spam the console!
+			if (this.show_data)
 				fb.trace(JSON.stringify(data, null, "    "));
-			}
-			
-			if (this.log_data)
-				this.log(data);
 			
 			this.post(data);
-		}
-		
-		this.log = function (data) {
-			var d = new Date();
-			var f = this.folder + _.padLeft(d.getMonth() + 1, 2, 0) + "." + d.getFullYear() + ".json";
-			if (_.isFile(f)) {
-				var json = _.jsonParse(_.open(f));
-				if (json.payload)
-					json = json.payload;
-			} else {
-				var json = [];
-			}
-			json.unshift(data.payload[0]);
-			_.save(JSON.stringify(json), f);
 		}
 		
 		this.post = function (data) {
@@ -100,13 +77,10 @@ _.mixin({
 			var f = metadb.GetFileInfo();
 			for (var i = 0; i < f.MetaCount; i++) {
 				var name = f.MetaName(i).toLowerCase();
-				if (!this.submit_genres && name == "genre")
+				if (name == "genre" && !this.submit_genres)
 					continue;
 				
-				if (_.isString(this.mb_names[name]))
-					var key = this.mb_names[name];
-				else
-					var key = name;
+				var key = _.isString(this.mb_names[name]) ? this.mb_names[name] : name;
 				
 				var num = f.MetaValueCount(i);
 				if (num == 1) {
@@ -127,20 +101,18 @@ _.mixin({
 			m.AppendMenuItem(MF_STRING, 1, "Set token...");
 			m.AppendMenuSeparator();
 			m.AppendMenuItem(MF_STRING, 2, "Set username...");
-			m.AppendMenuItem(this.username.length > 0 ? MF_STRING : MF_GRAYED, 3, "View profile");
+			m.AppendMenuItem(this.username.length ? MF_STRING : MF_GRAYED, 3, "View profile");
 			m.AppendMenuSeparator();
-			m.AppendMenuItem(flag, 4, "Show data before sending");
-			m.CheckMenuItem(4, this.show_data)
-			m.AppendMenuItem(flag, 5, "Save data to external file");
-			m.CheckMenuItem(5, this.log_data);
-			m.AppendMenuItem(flag, 6, "Submit library tracks only");
-			m.CheckMenuItem(6, this.library);
-			m.AppendMenuItem(flag, 7, "Submit genre tags");
-			m.CheckMenuItem(7, this.submit_genres);
+			m.AppendMenuItem(flag, 4, "Show submission data in Console when sending");
+			m.CheckMenuItem(4, this.show_data);
+			m.AppendMenuItem(flag, 5, "Submit Media Library tracks only");
+			m.CheckMenuItem(5, this.library);
+			m.AppendMenuItem(flag, 6, "Submit genre tags");
+			m.CheckMenuItem(6, this.submit_genres);
 			var idx = m.TrackPopupMenu(this.x, this.y + this.size);
 			switch (idx) {
 			case 1:
-				var token = _.input("Enter your token\n\nhttp://listenbrainz.org/user/import", panel.name, this.token);
+				var token = _.input("Enter your token\n\nhttps://listenbrainz.org/user/import", panel.name, this.token);
 				if (token != this.token) {
 					this.token = token;
 					utils.WriteINI(this.ini_file, "Listenbrainz", "token", this.token);
@@ -155,21 +127,17 @@ _.mixin({
 				}
 				break;
 			case 3:
-				_.browser("http://listenbrainz.org/user/" + this.username);
+				_.browser("https://listenbrainz.org/user/" + this.username);
 				break;
 			case 4:
 				this.show_data = !this.show_data;
 				window.SetProperty("2K3.LISTENBRAINZ.SHOW.DATA", this.show_data);
 				break;
 			case 5:
-				this.log_data = !this.log_data;
-				window.SetProperty("2K3.LISTENBRAINZ.LOG.DATA", this.log_data);
-				break;
-			case 6:
 				this.library = !this.library;
 				window.SetProperty("2K3.LISTENBRAINZ.LIBRARY", this.library);
 				break;
-			case 7:
+			case 6:
 				this.submit_genres = !this.submit_genres;
 				window.SetProperty("2K3.LISTENBRAINZ.SUBMIT.GENRES", this.submit_genres);
 				break;
@@ -182,8 +150,6 @@ _.mixin({
 			window.RepaintRect(this.x, this.y, this.size, this.size);
 		}
 		
-		this.folder = fb.ProfilePath + "listenbrainz\\";
-		_.createFolder(this.folder);
 		_.createFolder(folders.settings);
 		this.x = x;
 		this.y = y;
@@ -192,7 +158,6 @@ _.mixin({
 		this.token = utils.ReadINI(this.ini_file, "Listenbrainz", "token");
 		this.username = utils.ReadINI(this.ini_file, "Listenbrainz", "username");
 		this.show_data = window.GetProperty("2K3.LISTENBRAINZ.SHOW.DATA", false);
-		this.log_data = window.GetProperty("2K3.LISTENBRAINZ.LOG.DATA", true);
 		this.library = window.GetProperty("2K3.LISTENBRAINZ.LIBRARY", false);
 		this.submit_genres = window.GetProperty("2K3.LISTENBRAINZ.SUBMIT.GENRES", true);
 		this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
@@ -227,6 +192,6 @@ _.mixin({
 			"musicbrainz album status" : "releasestatus",
 			"musicbrainz album type" : "releasetype",
 			"titlesortorder" : "titlesort"
-		}
+		};
 	}
 });

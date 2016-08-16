@@ -1,3 +1,6 @@
+if (!("GetQueryItems" in fb))
+	fb.ShowPopupMessage("This script requires JScript Panel v1.1.0 or above.\n\nhttps://github.com/19379/foo-jscript-panel/releases");
+
 var DT_LEFT = 0x00000000;
 var DT_CENTER = 0x00000001;
 var DT_RIGHT = 0x00000002;
@@ -42,10 +45,12 @@ var fso = new ActiveXObject("Scripting.FileSystemObject");
 var vb = new ActiveXObject("ScriptControl");
 vb.Language = "VBScript";
 
-var tooltip = window.CreateTooltip(window.GetProperty("2K3.TOOLTIP.FONT.NAME", "Segoe UI"), window.GetProperty("2K3.TOOLTIP.FONT.SIZE", 12), window.GetProperty("2K3.TOOLTIP.FONT.STYLE", 0));
+var tooltip = window.CreateTooltip(
+	window.GetProperty("2K3.TOOLTIP.FONT.NAME", "Segoe UI"),
+	window.GetProperty("2K3.TOOLTIP.FONT.SIZE", 12),
+	window.GetProperty("2K3.TOOLTIP.FONT.STYLE", 0)
+);
 tooltip.SetMaxWidth(800);
-
-var drive = fb.ProfilePath.substring(0, 3);
 
 var folders = {};
 folders.home = fb.ProfilePath + "js_marc2003\\";
@@ -56,10 +61,8 @@ folders.data = fb.ProfilePath + "wsh_data\\";
 folders.artists = folders.data + "artists\\";
 folders.lastfm = folders.data + "lastfm\\";
 folders.docs = fb.ComponentPath + "docs\\";
-folders.git = drive + "Applications\\PortableGit\\";
 
-var np_exe = drive + "Applications\\Notepad++\\notepad++.exe";
-var ff_exe = WshShell.ExpandEnvironmentStrings("%USERPROFILE%") + "\\Documents\\FirefoxPortable\\FirefoxPortable.exe";
+var np_exe = fb.ProfilePath.substring(0, 3) + "Applications\\Notepad++\\notepad++.exe";
 
 var guifx = {
 	font : "Guifx v2 Transports",
@@ -78,7 +81,7 @@ var popup = {
 	stop : 16,
 	question : 32,
 	info : 64
-}
+};
 
 var image = {
 	crop : 0,
@@ -97,6 +100,12 @@ var ha_links = [
 ];
 
 _.mixin({
+	cc : function (name) {
+		return utils.CheckComponent(name, true);
+	},
+	dispose : function (o) {
+		o && o.Dispose();
+	},
 	q : function (value) {
 		return "\"" + value + "\"";
 	},
@@ -201,23 +210,17 @@ _.mixin({
 		}
 	},
 	browser : function (url) {
-		if (_.isFile(ff_exe))
-			_.run(ff_exe, url);
-		else
-			_.run(url)
+		_.run(url);
 	},
 	explorer : function (file) {
 		if (_.isFile(file))
 			WshShell.Run("explorer /select," + _.q(file));
 	},
-	samples : function (metadb) {
-		return _.formatNumber(_.tf("['('%length_samples% samples')']", metadb), " ");
-	},
 	fbEscape : function (value) {
 		return value.replace(/'/g, "''").replace(/[\(\)\[\],$]/g, "'$&'");
 	},
 	fbSanitise : function (value) {
-		return value.replace(/[\/\\|:]/g, "-").replace(/\*/g, "x").replace(/"/g, "''").replace(/[<>]/g, "_").replace(/\?/g, "");
+		return value.replace(/[\/\\|:]/g, "-").replace(/\*/g, "x").replace(/"/g, "''").replace(/[<>]/g, "_").replace(/\?/g, "").replace(/(?! )\s/g, "");
 	},
 	mbEscape : function (value) {
 		return value.replace(/[+!(){}\[\]^"~*?:\\\/-]/g, "\\$&");
@@ -302,11 +305,19 @@ _.mixin({
 			gr.DrawRect(src_x, src_y, src_w - 1, src_h - 1, 1, border);
 		return [src_x, src_y, src_w, src_h];
 	},
-	tf : function (pattern, metadb) {
-		return metadb ? fb.TitleFormat(pattern).EvalWithMetadb(metadb) : "";
+	tf : function (t, metadb) {
+		if (!metadb)
+			return "";
+		var tfo = fb.TitleFormat(t);
+		var str = tfo.EvalWithMetadb(metadb);
+		tfo.Dispose();
+		return str;
 	},
-	tfe : function (pattern, force) {
-		return fb.TitleFormat(pattern).Eval(force);
+	tfe : function (t, force) {
+		var tfo = fb.TitleFormat(t);
+		var str = tfo.Eval(force);
+		tfo.Dispose();
+		return str;
 	},
 	jsonParse : function (value, path) {
 		try {
@@ -326,9 +337,9 @@ _.mixin({
 	open : function (file) {
 		return utils.ReadTextFile(file);
 	},
-	save : function (value, file, format) {
+	save : function (value, file) {
 		try {
-			var ts = fso.OpenTextFile(file, 2, true, format || 0);
+			var ts = fso.OpenTextFile(file, 2, true, -1);
 			ts.WriteLine(value);
 			ts.Close();
 			return true;
@@ -372,10 +383,10 @@ _.mixin({
 	},
 	input : function (prompt, title, value) {
 		var original = value;
-		prompt = prompt.replace(/"/g, '" + Chr(34) + "').replace(/\n/g, '" + Chr(13) + "');
-		title = title.replace(/"/g, '" + Chr(34) + "');
-		value = value.replace(/"/g, '" + Chr(34) + "');
-		var temp_value = vb.eval('InputBox' + '("' + prompt + '", "' + title + '", "' + value + '")');
+		prompt = prompt.replace(/"/g, _.q(" + Chr(34) + ")).replace(/\n/g, _.q(" + Chr(13) + "));
+		title = title.replace(/"/g, _.q(" + Chr(34) + "));
+		value = value.replace(/"/g, _.q(" + Chr(34) + "));
+		var temp_value = vb.eval("InputBox(" + _.q(prompt) + ", " + _.q(title) + ", " + _.q(value) + ")");
 		return _.isUndefined(temp_value) ? original : _.trim(temp_value);
 	},
 	tt : function (value) {
@@ -417,8 +428,8 @@ _.mixin({
 		this.h = h;
 		this.fn = fn;
 		this.tiptext = tiptext;
-		this.img_normal = _.img(img_src.normal);
-		this.img_hover = img_src.hover ? _.img(img_src.hover) : this.img_normal;
+		this.img_normal = typeof img_src.normal == "string" ? _.img(img_src.normal) : img_src.normal;
+		this.img_hover = img_src.hover ? (typeof img_src.hover == "string" ? _.img(img_src.hover) : img_src.hover) : this.img_normal;
 		this.img = this.img_normal;
 	},
 	buttons : function () {
@@ -537,7 +548,7 @@ _.mixin({
 		s4.AppendTo(m1, MF_STRING, "Playback");
 		s5.AppendTo(m1, MF_STRING, "Library");
 		s6.AppendTo(m1, MF_STRING, "Help");
-		if (utils.CheckComponent("foo_ui_hacks", true) && utils.CheckComponent("foo_ui_columns", true)) {
+		if (_.cc("foo_ui_hacks") && _.cc("foo_ui_columns")) {
 			m1.AppendMenuSeparator();
 			m1.AppendMenuItem(MF_STRING, 1, "Switch UI");
 		}
@@ -607,10 +618,6 @@ _.mixin({
 			m1.AppendMenuItem(MF_STRING, 50, "Notepad++");
 			m1.AppendMenuSeparator();
 		}
-		if (_.isFolder(folders.git)) {
-			m1.AppendMenuItem(MF_STRING, 51, "Git Folder");
-			m1.AppendMenuSeparator();
-		}
 		m1.AppendMenuItem(MF_STRING, 70, "Configure...");
 		var idx = m1.TrackPopupMenu(x, y, flags);
 		switch (true) {
@@ -624,9 +631,6 @@ _.mixin({
 			break;
 		case idx == 50:
 			_.run(np_exe);
-			break;
-		case idx == 51:
-			_.run(folders.git);
 			break;
 		case idx == 70:
 			window.ShowConfigure();

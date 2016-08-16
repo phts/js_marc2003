@@ -22,14 +22,14 @@ _.mixin({
 		}
 		
 		this.metadb_changed = function () {
+			_.dispose(this.img);
+			this.img = null;
+			this.tooltip = this.path = "";
 			if (panel.metadb) {
-				this.img && this.img.Dispose();
-				this.tooltip = "";
-				this.path = "";
 				this.img = utils.GetAlbumArtV2(panel.metadb, this.id);
-				window.Repaint();
 				utils.GetAlbumArtAsync(window.ID, panel.metadb, this.id, true, false, true);
 			}
+			window.Repaint();
 		}
 		
 		this.get_album_art_done = function (p) {
@@ -81,7 +81,7 @@ _.mixin({
 			switch (true) {
 			case !this.trace(x, y):
 				return false;
-			case this.path == panel.metadb.Path:
+			case panel.metadb && this.path == panel.metadb.Path:
 				_.explorer(this.path);
 				break;
 			case _.isFile(this.path):

@@ -31,9 +31,8 @@ _.mixin({
 					this.content = "";
 					this.allmusic_url = false;
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename));
-						this.content = data[0];
-						//content is static so only check for updates if no review found previously
+						this.content = _.jsonParse(_.open(this.filename))[0];
+						// content is static so only check for updates if no review found previously
 						if (this.content.length == 0 && _.fileExpired(this.filename, ONE_DAY))
 							this.get();
 					} else {
@@ -48,8 +47,7 @@ _.mixin({
 					this.content = "";
 					this.filename = panel.new_artist_folder(this.artist) + "bio." + _.fbSanitise(this.bio_lastfm_sites[this.bio_lastfm_site]) + ".json";
 					if (_.isFile(this.filename)) {
-						var data = _.jsonParse(_.open(this.filename));
-						this.content = data[0];
+						this.content = _.jsonParse(_.open(this.filename))[0];
 						if (!_.isString(this.content))
 							this.content = "It appears the cached file has been corrupted. Use the right click menu>Force Update to try again.";
 						if (_.fileExpired(this.filename, ONE_DAY))
@@ -64,19 +62,22 @@ _.mixin({
 						return;
 					this.filename = temp_filename;
 					this.content = "";
-					if (_.isFolder(this.filename)) { //yes really!
+					if (_.isFolder(this.filename)) { // yes really!
 						var folder = this.filename + "\\";
-						var files = _.getFiles(folder, this.exts);
-						this.content = _.open(files[0]);
+						this.content = _.open(_.getFiles(folder, this.exts)[0]);
 					} else if (_.isFile(this.filename)) {
 						this.content = _.open(this.filename);
 					}
 					this.content = this.content.replace(/\t/g, "    ");
 					break;
 				}
-				this.update();
-				window.Repaint();
+			} else {
+				this.artist = "";
+				this.filename = "";
+				this.content = "";
 			}
+			this.update();
+			window.Repaint();
 		}
 		
 		this.trace = function (x, y) {
@@ -86,7 +87,7 @@ _.mixin({
 		this.wheel = function (s) {
 			if (this.trace(this.mx, this.my)) {
 				if (this.lines.length > this.rows) {
-					var offset = this.offset - (s * 5);
+					var offset = this.offset - (s * 3);
 					if (offset < 0)
 						offset = 0;
 					if (offset + this.rows > this.lines.length)
@@ -303,7 +304,7 @@ _.mixin({
 						.map("innerText")
 						.stripTags()
 						.value();
-					panel.console(content.length > 0 ? "A review was found and saved." : "No review was found on the page for this album.");
+					panel.console(content.length ? "A review was found and saved." : "No review was found on the page for this album.");
 					_.save(JSON.stringify([content]), f);
 					this.artist = "";
 					panel.item_focus_change();
@@ -315,24 +316,20 @@ _.mixin({
 							.forEach(function (item) {
 								var divs = item.getElementsByTagName("div");
 								var album = divs[2].getElementsByTagName("a")[0].innerText;
-								var url = divs[2].getElementsByTagName("a")[0].href;
-								var temp = divs[3].getElementsByTagName("a");
-								if (temp.length > 0)
-									var artist = temp[0].innerText;
-								else
-									var artist = "various artists";
+								var tmp = divs[3].getElementsByTagName("a");
+								var artist = tmp.length ? tmp[0].innerText : "various artists";
 								if (this.is_match(artist, album)) {
-									this.allmusic_url = url;
+									this.allmusic_url = divs[2].getElementsByTagName("a")[0].href;
 									return false;
 								}
 							}, this)
 							.value();
-						if (this.allmusic_url.length > 0) {
+						if (this.allmusic_url.length) {
 							panel.console("A page was found for " + _.q(this.album) + ". Now checking for review...");
 							this.get();
 						} else {
 							panel.console("Could not match artist/album on the Allmusic website.");
-							_.save(JSON.stringify([""]), f, -1);
+							_.save(JSON.stringify([""]), f);
 						}
 					} catch (e) {
 						panel.console("Could not parse Allmusic server response.");
@@ -345,7 +342,7 @@ _.mixin({
 					.map("innerHTML")
 					.stripTags()
 					.value();
-				_.save(JSON.stringify([content]), f, -1);
+				_.save(JSON.stringify([content]), f);
 				this.artist = "";
 				panel.item_focus_change();
 				break;
@@ -390,7 +387,7 @@ _.mixin({
 			}
 		}
 		
-		panel.text_objects.push(this); //required for font change shiznit
+		panel.text_objects.push(this);
 		this.mode = mode;
 		this.x = x;
 		this.y = y;

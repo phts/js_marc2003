@@ -21,7 +21,7 @@ _.mixin({
 			this.xmlhttp.send(data);
 			this.xmlhttp.onreadystatechange = _.bind(function () {
 				if (this.xmlhttp.readyState == 4) {
-					//don't check for http status 200 since new last.fm site went live
+					// don't check for http status 200 since new last.fm site went live
 					var data = _.jsonParse(this.xmlhttp.responsetext);
 					if (data.error) {
 						WshShell.popup(data.message, 0, panel.name, popup.stop);
@@ -47,7 +47,7 @@ _.mixin({
 
 		this.update_password = function () {
 			this.password = _.input("Enter your Last.fm password", panel.name, "");
-			if (this.password.length > 0) {
+			if (this.password.length) {
 				this.write_ini("sk", "");
 				window.NotifyOthers("2K3.NOTIFY.LASTFM", "update");
 				this.notify_data("2K3.NOTIFY.LASTFM", "update");
@@ -74,25 +74,6 @@ _.mixin({
 
 		this.write_ini = function (k, v) {
 			utils.WriteINI(this.ini_file, "Last.fm", k, v);
-		}
-
-		this.ok = function () {
-			switch (true) {
-			case this.api_key.length != 32:
-				panel.console("Last.fm API KEY not set.");
-				return false;
-			case this.secret.length != 32:
-				panel.console("Last.fm SECRET not set.");
-				return false;
-			case this.username.length == 0:
-				panel.console("Last.fm Username not set.");
-				return false;
-			case this.sk.length != 32:
-				panel.console("Last.fm Password not set.");
-				return false;
-			default:
-				return true;
-			}
 		}
 
 		this.scrobbler = null;

@@ -6,7 +6,9 @@ _.mixin({
 		}
 
 		this.playback_new_track = function () {
+			this.metadb = fb.GetNowPlaying();
 			this.time_elapsed = 0;
+			this.timestamp = _.floor(_.now() / 1000);
 			this.target_time = Math.min(_.ceil(fb.PlaybackLength / 2), 240);
 		}
 
@@ -15,19 +17,19 @@ _.mixin({
 			switch (true) {
 			case !this.enabled:
 				return;
-			case this.time_elapsed == 2 && fb.IsMetadbInMediaLibrary(fb.GetNowPlaying()):
-				this.post("track.updateNowPlaying", fb.GetNowPlaying());
+			case this.time_elapsed == 2 && fb.IsMetadbInMediaLibrary(this.metadb):
+				this.post("track.updateNowPlaying", this.metadb);
 				break;
 			case this.time_elapsed == this.target_time:
-				if (!fb.IsMetadbInMediaLibrary(fb.GetNowPlaying())) {
+				if (!fb.IsMetadbInMediaLibrary(this.metadb)) {
 					panel.console("Skipping... Track not in Media Library.");
 				} else if (fb.PlaybackLength < this.min_length) {
 					panel.console("Not submitting. Track too short.");
-					//if not importing, still check to see if a track is loved even if it is too short to scrobble
-					if (!this.loved_working && !this.playcount_working)
-						this.get("track.getInfo", fb.GetNowPlaying());
+					// still check to see if a track is loved even if it is too short to scrobble
+					this.get("track.getInfo", this.metadb);
 				} else {
-					this.post("track.scrobble", fb.GetNowPlaying());
+					this.attempt = 1;
+					this.post("track.scrobble", this.metadb);
 				}
 				break;
 			}
@@ -46,9 +48,19 @@ _.mixin({
 		}
 
 		this.post = function (method, metadb) {
-			if (!lastfm.ok())
+			switch (true) {
+			case this.loved_working:
+			case this.playcount_working:
 				return;
-			var timestamp = _.floor(_.now() / 1000);
+			case lastfm.api_key.length != 32:
+				return panel.console("Last.fm API KEY not set.");
+			case lastfm.secret.length != 32:
+				return panel.console("Last.fm SECRET not set.");
+			case lastfm.username.length == 0:
+				return panel.console("Last.fm Username not set.");
+			case lastfm.sk.length != 32:
+				return panel.console("Last.fm Password not set.");
+			}
 			var artist = _.tf("%artist%", metadb);
 			var track = _.tf("%title%", metadb);
 			var album = _.tf("[%album%]", metadb);
@@ -64,8 +76,8 @@ _.mixin({
 				var post_data = "sk=" + lastfm.sk + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track);
 				break;
 			case "track.scrobble":
-				var api_sig = md5("album" + album + "api_key" + lastfm.api_key + "artist" + artist + "duration" + duration + "method" + method + "sk" + lastfm.sk + "timestamp" + timestamp + "track" + track + lastfm.secret);
-				var post_data = "format=json&sk=" + lastfm.sk + "&duration=" + duration + "&timestamp=" + timestamp + "&album=" + encodeURIComponent(album) + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track);
+				var api_sig = md5("album" + album + "api_key" + lastfm.api_key + "artist" + artist + "duration" + duration + "method" + method + "sk" + lastfm.sk + "timestamp" + this.timestamp + "track" + track + lastfm.secret);
+				var post_data = "format=json&sk=" + lastfm.sk + "&duration=" + duration + "&timestamp=" + this.timestamp + "&album=" + encodeURIComponent(album) + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track);
 				break;
 			case "track.updateNowPlaying":
 				var api_sig = md5("api_key" + lastfm.api_key + "artist" + artist + "duration" + duration + "method" + method + "sk" + lastfm.sk + "track" + track + lastfm.secret);
@@ -99,11 +111,13 @@ _.mixin({
 			var url = lastfm.get_base_url() + "&method=" + method;
 			switch (method) {
 			case "track.getInfo":
+				if (this.loved_working || this.playcount_working)
+					return;
 				var artist = _.tf("%artist%", metadb);
 				var track = _.tf("%title%", metadb);
 				if (!_.tagged(artist) || !_.tagged(track))
 					return;
-				//must use autocorrect now even when it is disabled on website
+				// must use autocorrect now even when it is disabled on website
 				url += "&username=" + lastfm.username + "&artist=" + encodeURIComponent(artist) + "&track=" + encodeURIComponent(track) + "&autocorrect=1&s=" + _.now();
 				break;
 			case "user.getLovedTracks":
@@ -164,15 +178,30 @@ _.mixin({
 				if (data.error) {
 					panel.console(data.message);
 				} else {
-					data = _.get(data, 'scrobbles["@attr"]');
-					if (data.accepted == 1) {
-						panel.console("Track scrobbled successfully.");
-						if (!this.loved_working && !this.playcount_working) {
-							panel.console("Now fetching updated playcount...");
-							this.get("track.getInfo", metadb);
-						}
-					} else if (data.ignored == 1) {
+					data = _.get(data, 'scrobbles["@attr"]', []);
+					if (data.ignored == 1)
 						panel.console("Track not scrobbled. The submission server refused it possibly because of incomplete tags or incorrect system time.");
+					else if (data.accepted == 1)
+						panel.console("Track scrobbled successfully.");
+					else {
+						if (this.attempt == 1)
+							panel.console("Unexpected submission server response.");
+						if (this.attempt < 5) {
+							this.attempt++;
+							panel.console("Retrying...");
+							window.SetTimeout(_.bind(function () {
+								this.post(method, metadb);
+							}, this), 1000);
+						} else {
+							panel.console("Submission failed.");
+						}
+						return;
+					}
+					if (!this.loved_working && !this.playcount_working) {
+						panel.console("Now fetching playcount...");
+						window.SetTimeout(_.bind(function () {
+							this.get("track.getInfo", metadb);
+						}, this), 1000);
 					}
 				}
 				break;
@@ -193,7 +222,7 @@ _.mixin({
 				if (fb.PlaybackLength < this.min_length)
 					return;
 				var old_playcount = _.parseInt(_.tf("$if2(%LASTFM_PLAYCOUNT_DB%,0)", metadb));
-				var new_playcount = data.track.userplaycount > 0 ? _.parseInt(data.track.userplaycount) : 1;
+				var new_playcount = data.track.userplaycount > 0 ? _.parseInt(data.track.userplaycount) : 0;
 				panel.console("Old value: " + old_playcount);
 				panel.console("New value: " + new_playcount);
 				switch (true) {
@@ -222,7 +251,7 @@ _.mixin({
 					this.pages = data.lovedtracks["@attr"].totalPages;
 				}
 				data = _.get(data, "lovedtracks.track", []);
-				if (data.length > 0) {
+				if (data.length) {
 					_.forEach(data, function (item) {
 						var artist = item.artist.name;
 						var title = item.name;
@@ -240,22 +269,10 @@ _.mixin({
 					this.get("user.getLovedTracks", null, this.page);
 				} else {
 					this.loved_working = false;
-					switch (true) {
-					case this.full_import:
-						this.playcount_working = true;
-						this.pages = 0;
-						this.r = 1;
-						this.get("user.getTopTracks", null, 1);
-						break;
-					case this.sql == "BEGIN TRANSACTION;\r\n":
-						panel.console("Nothing found to import.");
-						break;
-					default:
-						this.sql += "COMMIT;";
-						_.save(this.sql, this.sql_file);
-						this.finish_import();
-						break;
-					}
+					this.playcount_working = true;
+					this.pages = 0;
+					this.r = 1;
+					this.get("user.getTopTracks", null, 1);
 				}
 				break;
 			case "user.getTopTracks":
@@ -268,7 +285,7 @@ _.mixin({
 					this.pages = data.toptracks["@attr"].totalPages;
 				}
 				data = _.get(data, "toptracks.track", []);
-				if (data.length > 0) {
+				if (data.length) {
 					_.forEach(data, function (item) {
 						var playcount = item.playcount;
 						if (playcount > 0) {
@@ -293,7 +310,9 @@ _.mixin({
 						panel.console("Nothing found to import.");
 					} else {
 						this.sql += "COMMIT;";
-						_.save(this.sql, this.sql_file);
+						var ts = fso.OpenTextFile(this.sql_file, 2, true, 0);
+						ts.WriteLine(this.sql);
+						ts.Close();
 						this.finish_import();
 					}
 				}
@@ -335,17 +354,11 @@ _.mixin({
 		}
 
 		this.finish_import = function () {
-			switch (true) {
-			case !this.full_import && this.loved_page_errors > 0:
-				panel.console("Loved track page errors: " + this.loved_page_errors + " (200 records are lost for every page that fails.)");
-				break;
-			case this.full_import && this.loved_page_errors + this.playcount_page_errors > 0:
+			if (this.loved_page_errors + this.playcount_page_errors > 0) {
 				panel.console("Loved track page errors: " + this.loved_page_errors + " (200 records are lost for every page that fails.)");
 				panel.console("Playcount page errors: " + this.playcount_page_errors + " (100 records are lost for every page that fails.)");
-				break;
-			default:
+			} else {
 				panel.console("There were no errors reported.");
-				break;
 			}
 			_.run(_.shortPath(this.cmd_file), _.shortPath(this.sqlite3_file), _.shortPath(this.db_file), _.shortPath(this.sql_file));
 		}
@@ -373,7 +386,6 @@ _.mixin({
 
 		this.menu = function () {
 			var m = window.CreatePopupMenu();
-			var s = window.CreatePopupMenu();
 			var working = this.loved_working || this.playcount_working;
 			var flag = working || lastfm.username.length == 0 ? MF_GRAYED : MF_STRING;
 			m.AppendMenuItem(working ? MF_GRAYED : MF_STRING, 1, "Last.fm username...");
@@ -383,13 +395,11 @@ _.mixin({
 			m.AppendMenuItem(flag, 3, "Enabled");
 			m.CheckMenuItem(3, this.enabled);
 			m.AppendMenuSeparator();
-			s.AppendMenuItem(flag, 4, "loved tracks and playcount");
-			s.AppendMenuItem(flag, 5, "loved tracks only");
-			s.AppendTo(m, MF_STRING, "Library import");
+			m.AppendMenuItem(MF_STRING, 4, "Library import");
 			m.AppendMenuSeparator();
-			m.AppendMenuItem(MF_STRING, 6, "Show loved tracks");
+			m.AppendMenuItem(MF_STRING, 5, "Show loved tracks");
 			m.AppendMenuSeparator();
-			m.AppendMenuItem(lastfm.username.length > 0 ? MF_STRING : MF_GRAYED, 7, "View profile");
+			m.AppendMenuItem(lastfm.username.length ? MF_STRING : MF_GRAYED, 6, "View profile");
 			var idx = m.TrackPopupMenu(this.x, this.y + this.size);
 			switch (idx) {
 			case 1:
@@ -404,14 +414,12 @@ _.mixin({
 				this.update_button();
 				break;
 			case 4:
-			case 5:
-				this.full_import = idx == 4;
 				this.start_import();
 				break;
-			case 6:
+			case 5:
 				fb.ShowLibrarySearchUI("%LASTFM_LOVED_DB% IS 1");
 				break;
-			case 7:
+			case 6:
 				_.browser("http://www.last.fm/user/" + lastfm.username);
 				break;
 			case 8:
@@ -419,7 +427,6 @@ _.mixin({
 				break;
 			}
 			m.Dispose();
-			s.Dispose();
 		}
 
 		this.interval_func = _.bind(function () {
@@ -427,12 +434,12 @@ _.mixin({
 				return;
 			if (this.page != this.last_page)
 				return this.last_page = this.page;
-			var temp = this.page > 1 ? this.page - 1 : 1;
+			var tmp = this.page > 1 ? this.page - 1 : 1;
 			this.xmlhttp.abort();
 			if (this.loved_working)
-				this.get("user.getLovedTracks", null, temp);
+				this.get("user.getLovedTracks", null, tmp);
 			else if (this.playcount_working)
-				this.get("user.getTopTracks", null, temp);
+				this.get("user.getTopTracks", null, tmp);
 		}, this);
 
 		lastfm.scrobbler = this;
@@ -453,6 +460,7 @@ _.mixin({
 		this.last_page = 0;
 		this.enabled = window.GetProperty("2K3.SCROBBLER.ENABLED", true);
 		this.xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		this.metadb = fb.GetNowPlaying();
 		window.SetInterval(this.interval_func, 15000);
 	}
 });

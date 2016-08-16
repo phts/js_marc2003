@@ -7,9 +7,9 @@
 // @import "%fb2k_profile_path%js_marc2003\js\list.js"
 // ==/PREPROCESSOR==
 
-//this script requires musicbrainz artist id tags in your files
-//https://musicbrainz.org/doc/MusicBrainz_Identifier
-//these tags can be populated with musicbrainz picard or foo_musicbrainz
+// this script requires musicbrainz artist id tags in your files
+// https://musicbrainz.org/doc/MusicBrainz_Identifier
+// these tags can be populated with musicbrainz picard or foo_musicbrainz
 
 var panel = new _.panel("Musicbrainz", ["metadb"]);
 var list = new _.list("musicbrainz", 10, 24, 0, 0);
