@@ -431,7 +431,6 @@ _.mixin({
 
 		lastfm.scrobbler = this;
 		_.createFolder(folders.data);
-		_.createFolder(folders.lastfm);
 		_.createFolder(folders.settings);
 		this.x = x;
 		this.y = y;
