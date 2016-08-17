@@ -157,15 +157,6 @@ _.mixin({
 			switch (method) {
 			case "track.love":
 			case "track.unlove":
-				/*re-instate this if last.fm start returning JSON again
-				var data = _.jsonParse(this.xmlhttp.responsetext);
-				if (data.error) {
-					panel.console(data.message);
-				} else if (data.status == "ok") {
-					panel.console("Track " + (method == "track.love" ? "loved successfully." : "unloved successfully."));
-					fb.RunContextCommandWithMetadb("Customdb Love " + (method == "track.love" ? 1 : 0), metadb, 8);
-				}
-				*/
 				if (this.xmlhttp.responsetext.indexOf("ok") > -1) {
 					panel.console("Track " + (method == "track.love" ? "loved successfully." : "unloved successfully."));
 					fb.RunContextCommandWithMetadb("Customdb Love " + (method == "track.love" ? 1 : 0), metadb, 8);
