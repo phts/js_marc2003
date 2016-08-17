@@ -382,7 +382,8 @@ _.mixin({
 			m.AppendMenuItem(flag, 3, "Enabled");
 			m.CheckMenuItem(3, this.enabled);
 			m.AppendMenuSeparator();
-			m.AppendMenuItem(MF_STRING, 4, "Library import");
+			m.AppendMenuItem(working ? MF_GRAYED : MF_STRING, 4, "Library import");
+			m.AppendMenuItem(working ? MF_STRING : MF_GRAYED, 9, "Abort");
 			m.AppendMenuSeparator();
 			m.AppendMenuItem(MF_STRING, 5, "Show loved tracks");
 			m.AppendMenuSeparator();
@@ -411,6 +412,9 @@ _.mixin({
 				break;
 			case 8:
 				lastfm.update_api_key();
+				break;
+			case 9:
+				this.loved_working = this.playcount_working = false;
 				break;
 			}
 			m.Dispose();
