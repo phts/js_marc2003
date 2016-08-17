@@ -223,10 +223,6 @@ _.mixin({
 				case new_playcount == old_playcount:
 					panel.console("No changes found. Not updating.");
 					break;
-				case new_playcount == old_playcount + 1:
-					fb.RunContextCommandWithMetadb("Customdb Add 1", metadb, 8);
-					panel.console("Database updated successfully.");
-					break;
 				default:
 					this.update_playcount(metadb, new_playcount);
 					break;
