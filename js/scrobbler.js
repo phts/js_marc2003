@@ -214,6 +214,7 @@ _.mixin({
 					return;
 				var old_playcount = _.parseInt(_.tf("$if2(%LASTFM_PLAYCOUNT_DB%,0)", metadb));
 				var new_playcount = data.track.userplaycount > 0 ? _.parseInt(data.track.userplaycount) : 0;
+				new_playcount += 1;
 				panel.console("Old value: " + old_playcount);
 				panel.console("New value: " + new_playcount);
 				switch (true) {
