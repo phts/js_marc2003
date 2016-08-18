@@ -1,6 +1,6 @@
 # js_marc2003
 
-My fork of [js-marc2003](https://github.com/19379/js-marc2003) that contains some fixes and improvements.
+My fork of [js-marc2003](https://github.com/19379/js-marc2003) that contains some fixes and improvements in most cases for last.fm scrobbler.
 
 Main changes:
 
@@ -8,6 +8,24 @@ Main changes:
 * Able to perform playcount sync only (without scrobbling)
 * Fix scrobbler button behavior
 * Make it work on Linux
+
+## Requirements:
+
+1. [JScript Panel component](https://github.com/19379/foo-jscript-panel/releases)
+
+1. For Last.fm functionality: [Custom Database component](https://hydrogenaud.io/index.php/topic,75306.0.html)
+
+    1. Add two fields:
+
+        * `LASTFM_LOVED_DB`. Key: `$crc32($lower(%artist%%title%))`
+        * `LASTFM_PLAYCOUNT_DB`. Key: `$crc32($lower(%artist%%title%))`
+
+    1. Add actions:
+
+        * `Customdb Love 1`. Field: `LASTFM_LOVED_DB`. Update: `Contexmenu`. Set value: `1`.
+        * `Customdb Love 0`. Field: `LASTFM_LOVED_DB`. Update: `Contexmenu -> Erase`.
+        * `Customdb Delete Playcount`. Field `LASTFM_PLAYCOUNT_DB`. Update: `Contexmenu -> Erase`.
+        * `Customdb Refresh`. Field `LASTFM_PLAYCOUNT_DB`. Update: `Contexmenu`. Set value: `[%LASTFM_PLAYCOUNT_DB%]`.
 
 ## Make it work on Linux via Wine:
 
