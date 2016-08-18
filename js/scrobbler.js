@@ -215,8 +215,6 @@ _.mixin({
 				var old_playcount = _.parseInt(_.tf("$if2(%LASTFM_PLAYCOUNT_DB%,0)", metadb));
 				var new_playcount = data.track.userplaycount > 0 ? _.parseInt(data.track.userplaycount) : 0;
 				new_playcount += 1;
-				panel.console("Old value: " + old_playcount);
-				panel.console("New value: " + new_playcount);
 				switch (true) {
 				case new_playcount < old_playcount:
 					panel.console("Playcount returned from Last.fm is lower than current value. Not updating.");
@@ -309,14 +307,15 @@ _.mixin({
 		}
 
 		this.update_playcount = function (metadb, new_value) {
-			panel.console("Attempting to update database...");
 			fb.RunContextCommandWithMetadb("Customdb Delete Playcount", metadb, 8);
 			window.SetTimeout(_.bind(function () {
 				var crc32 = _.tf("$crc32($lower(%artist%%title%))", metadb);
 				var cmd = _.shortPath(this.sqlite3_file) + " " + _.shortPath(this.db_file) + " \"INSERT INTO quicktag(url,subsong,fieldname,value) VALUES('" + crc32 + "','-1','LASTFM_PLAYCOUNT_DB','" + new_value + "');\"";
 				var attempt = 1;
 				while (_.tf("%LASTFM_PLAYCOUNT_DB%", metadb) != new_value && attempt <= 10) {
-					panel.console("Attempt: " + attempt);
+					if (attempt !== 1) {
+						panel.console("Attempt: " + attempt);
+					}
 					_.runCmd(cmd, true);
 					attempt++;
 				}
